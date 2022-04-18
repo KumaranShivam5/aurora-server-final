@@ -255,11 +255,15 @@ def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=Fa
         plt.savefig(f'{save}/{data}_{model}.jpg')
 
 
-def get_score(data , model , k=-1,confidance=0):
-    if(k==-1):
-        rdata = pd.read_csv(f'validation_res/{data}_{model}_loo.csv')
+def get_score(arr , k=-1,confidance=0):
+    if(len(arr)==1):
+        rdata = arr[0]
     else:
-        rdata = pd.read_csv(f'validation_res/{data}_{model}_{k}_fold.csv')
+        data , model = arr[0] , arr[1]
+        if(k==-1):
+            rdata = pd.read_csv(f'validation_res/{data}_{model}_loo.csv')
+        else:
+            rdata = pd.read_csv(f'validation_res/{data}_{model}_{k}_fold.csv')
     #display(rdata)
     
     #rdata = rdata[rdata['class'].isin(classes)]
