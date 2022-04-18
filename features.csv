@@ -1,0 +1,47 @@
+i,0
+1,gal_b2
+2,gal_l2
+3,hard_hs
+4,hard_hm
+5,hard_ms
+6,var_inter_prob_b
+7,var_inter_sigma_b
+8,var_intra_prob_b
+9,var_inter_index_b
+10,kp_intra_prob_b
+11,var_intra_index_b
+12,h-csc
+13,b-csc
+14,m-csc
+15,s-csc
+16,u-csc
+18,FUV
+19,NUV
+20,u-sdss
+21,g-sdss
+22,r-sdss
+23,i-sdss
+24,z-sdss
+25,W1
+26,W2
+27,W3
+28,W4
+29,4.5 microns (IRAC)
+30,8.0 microns (IRAC)
+35,3.6 microns (IRAC)
+36,5.8 microns (IRAC)
+32,J
+33,H
+34,K
+37,G
+38,Bp
+39,Rp
+40,B-R
+41,G-J
+42,G-W2
+43,Bp-H
+44,Bp-W3
+45,Rp-K
+46,J-H
+47,J-W1
+48,W1-W2
