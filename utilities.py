@@ -204,6 +204,7 @@ def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=Fa
         else:
             rdata = pd.read_csv(f'validation_res/{data}_{model}_{k}_fold.csv')
     #rdata = rdata[rdata['class'].isin(classes)]
+    display(rdata)
     y_total = rdata['true_class'].value_counts().to_dict()
     #print(y_total)
     pred_min = rdata['pred_prob'].min()
