@@ -234,7 +234,20 @@ def get_score(arr , k=-1,confidance=0):
     }
     return score_dict
 
+def norm_prob(arr):
+    norm_arr = [el/sum(el) for el in arr]
+    return norm_arr
 
+def softmax(arr):
+    print(arr.shape)
+    norm_arr = []
+    for el in arr:
+        exp = np.power(el ,1)
+        exp = exp / sum(exp)
+        norm_arr.append(exp)
+    #print(exp)
+    norm_arr = np.asarray(norm_arr)
+    return norm_arr
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 def simple_cv(x,y,model , k=10):
@@ -263,7 +276,7 @@ def simple_cv(x,y,model , k=10):
         df = pd.DataFrame({
             'true_class' : y_test , 
             'pred_class' : model_temp.predict(x_test) , 
-            'pred_prob' : [np.amax(el) for el in model_temp.predict_proba(x_test)]
+            'pred_prob' : [np.amax(el) for el in norm_prob(model_temp.predict_proba(x_test))]
             })  
         df_all.append(df)
     #score_dict = get_score([df])
@@ -495,4 +508,22 @@ def feature_imp(data , model , k=-1 , return_score = 'recall' ,save_df = 0 ):
 
 
 
+def take_df_mean(arr):
+    arr_ret = np.asmatrix(arr[0])
+    col_names = arr[0].columns.to_list()
+    index_names = arr[0].index.to_list()
+    l = len(arr)
+    df_i , df_j = arr[0].shape
+    mean_mat , std_mat = [] , []
+    for i in range(df_i):
+        temp_mean_arr = []
+        temp_std_arr = []
+        for j in range(df_j):
+            temp_mean_arr.append(np.mean([el.iloc[i][j] for el in arr]))
+            temp_std_arr.append(np.std([el.iloc[i][j] for el in arr]))
+        mean_mat.append(temp_mean_arr)
+        std_mat.append(temp_std_arr)
+    mean_df = pd.DataFrame(mean_mat , index = index_names , columns=col_names)
+    std_df = pd.DataFrame(std_mat , index = index_names , columns=col_names)
+    return mean_df , std_df
 
