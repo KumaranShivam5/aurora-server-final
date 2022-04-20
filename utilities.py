@@ -180,82 +180,6 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         ret['roc-auc'] = ra_score
     return ret , mem_table , x_index
 
-
-from sklearn.metrics import f1_score, recall_score , confusion_matrix , precision_score , accuracy_score , balanced_accuracy_score , roc_auc_score
-from matplotlib import pyplot as plt
-import seaborn as sns
-plot_dict_def = {
-    'title' : True , 
-    'font_scale' : 1.0 , 
-    'cbar' : False ,
-    'plot_num' : False,
-}
-all_cl = ['AGN' ,'STAR' , 'YSO' , 'PULSAR'  , 'CV' , 'LMXB' , 'HMXB' ,'ULX'] 
-def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=False, label  = '',plot_dict = plot_dict_def):
-    #sns.set(font_scale = plot_dict['font_scale'])
-    
-    sns.set(font_scale=plot_dict['font_scale'], rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':True} , style="ticks")
-    if(len(dataset)==1):
-        rdata = dataset[0]
-    else:
-        data , model = dataset[0] , dataset[1]
-        if(k==-1):
-            rdata = pd.read_csv(f'validation_res/{data}_{model}_loo.csv')
-        else:
-            rdata = pd.read_csv(f'validation_res/{data}_{model}_{k}_fold.csv')
-    #rdata = rdata[rdata['class'].isin(classes)]
-    display(rdata)
-    y_total = rdata['true_class'].value_counts().to_dict()
-    #print(y_total)
-    pred_min = rdata['pred_prob'].min()
-    rdata= rdata[rdata['pred_prob']>confidance]
-    y_true = rdata['true_class']
-    y_pred = rdata['pred_class']
-    y_true_count = y_true.value_counts().to_dict()
-    y_pred_count = y_pred.value_counts().to_dict()
-    #print(y_pred_count)
-    #labels = y_true.unique()
-    #rint(labels)
-    labels = np.sort(y_true.unique())
-    xticks , yticks = [] , []
-    for l in labels:
-        try:
-            yticks.append(f'{l}\n{y_true_count[l]}/{y_total[l]}')
-            #xticks.append(f'{l}\n{y_pred_count[l]}')
-        except : 
-            yticks.append(f'{l}\n{0}/{y_total[l]}')
-            #xticks.append(f'{l}\n{0}')
-    #print(labels)
-    cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
-    if(ax=='self'):
-        fig , ax = plt.subplots(nrows=1 , ncols=1 , figsize = (7,6))
-    acc = accuracy_score(y_true , y_pred)
-    cmap = 'rocket_r'
-    if(plot_dict['plot_num']):
-        sns.heatmap(cm*100 , annot=True , ax=ax ,xticklabels=labels , yticklabels=yticks , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap=cmap )
-    else:
-        sns.heatmap(cm*100 , annot=True , ax=ax ,xticklabels=labels , yticklabels=labels , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap= cmap )
-    #print(confidance , rdata['pred_prob'].min())
-    if(plot_dict['title']):
-        if(confidance < pred_min):
-            ax.set_title(f'Data : {data} | Model : {model} \n Prob Threshold : Max prob | Accuracy : {acc*100:.1f}')
-            ax.set_title(f'{label} | Prob Threshold : Max prob | Accuracy : {acc*100:.1f}')
-        else :
-            #print('in else')
-            
-            ax.set_title(label+f'Data : {data} | Model : {model} \n Prob Threshold {confidance} | Accuracy : {acc*100:.1f}')
-            #print(label)
-            ax.set_title(f'{label} | Prob Threshold {confidance} | Accuracy : {acc*100:.1f}')
-            #ax.set_title(f'Prob Threshold {confidance} | Accuracy : {acc*100:.1f}')
-    #ax.set_title(f'Accuracy : {acc*100:.1f}')
-    ax.set_ylabel('True class')
-    ax.set_xlabel('Predicted class')
-    #ax.set_yticks(rotation=0)
-    ax.tick_params(axis='y', rotation=0)
-    if save:
-        plt.savefig(f'{save}/{data}_{model}.jpg')
-
-
 def get_score(arr , k=-1,confidance=0):
     if(len(arr)==1):
         rdata = arr[0]
@@ -309,6 +233,141 @@ def get_score(arr , k=-1,confidance=0):
         }).sort_values(by='class').set_index('class') , 
     }
     return score_dict
+
+
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import StratifiedKFold
+def simple_cv(x,y,model , k=10):
+    x_col = x.columns.to_list()
+    #display(x)
+    #display(y.to_frame())
+    df = pd.merge(x,y.to_frame() , left_index=True , right_index=True)
+    df = df.sample(frac=1)
+    x = df[x_col] 
+    y = df['class']
+    x = x.reset_index(drop=True) 
+    y = y.reset_index(drop=True)
+    cv_split = StratifiedKFold(k)
+    i=0
+    df_all = []
+    for train,test in (cv_split.split(x,y)):
+        i+=1
+        print('----------------------------------------------------------')
+        print(f'GOING for {i} / {k} Iteration FOLD')
+        print('___________________________________________________________')
+
+        x_train , x_test = x.loc[train , :] , x.loc[test , :]
+        y_train , y_test = y.loc[train] , y.loc[test]
+        model_temp = model
+        model_temp.fit(x_train , y_train)
+        df = pd.DataFrame({
+            'true_class' : y_test , 
+            'pred_class' : model_temp.predict(x_test) , 
+            'pred_prob' : [np.amax(el) for el in model_temp.predict_proba(x_test)]
+            })  
+        df_all.append(df)
+    #score_dict = get_score([df])
+    #score_dict['res_table'] = df  
+    df = pd.concat(df_all)  
+    score = get_score([df])
+    score['res_table'] = df 
+    model_temp = model 
+    model_temp.fit(x,y)
+    score['clf'] = model
+    return score 
+
+
+
+
+
+from sklearn.metrics import f1_score, recall_score , confusion_matrix , precision_score , accuracy_score , balanced_accuracy_score , roc_auc_score
+from matplotlib import pyplot as plt
+import seaborn as sns
+plot_dict_def = {
+    'title' : True , 
+    'font_scale' : 1.0 , 
+    'cbar' : False ,
+    'plot_num' : False,
+}
+all_cl = ['AGN' ,'STAR' , 'YSO' , 'PULSAR'  , 'CV' , 'LMXB' , 'HMXB' ,'ULX'] 
+
+
+
+
+
+def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=False, label  = '',plot_dict = plot_dict_def):
+    #sns.set(font_scale = plot_dict['font_scale'])
+    
+    sns.set(font_scale=plot_dict['font_scale'], rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':True} , style="ticks")
+    if(len(dataset)==1):
+        rdata  = dataset[0]
+        data , model = '' , ''
+    else:
+        data , model = dataset[0] , dataset[1]
+        if(k==-1):
+            rdata = pd.read_csv(f'validation_res/{data}_{model}_loo.csv')
+        else:
+            rdata = pd.read_csv(f'validation_res/{data}_{model}_{k}_fold.csv')
+    #rdata = rdata[rdata['class'].isin(classes)]
+    #display(rdata)
+    y_total = rdata['true_class'].value_counts().to_dict()
+    #print(y_total)
+    pred_min = rdata['pred_prob'].min()
+    rdata= rdata[rdata['pred_prob']>confidance]
+    y_true = rdata['true_class']
+    y_pred = rdata['pred_class']
+    y_true_count = y_true.value_counts().to_dict()
+    y_pred_count = y_pred.value_counts().to_dict()
+    #print(y_pred_count)
+    #labels = y_true.unique()
+    #rint(labels)
+    labels = np.sort(y_true.unique())
+    xticks , yticks = [] , []
+    
+    #print(labels)
+    cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
+    temp_df = pd.DataFrame({
+        'class': labels,
+        'diag' : np.diag(cm)
+    })
+    temp_df = temp_df.sort_values(by='diag' , ascending=False)
+    labels = temp_df['class']
+    cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
+    for l in labels:
+        try:
+            yticks.append(f'{l}\n{y_true_count[l]}/{y_total[l]}')
+            #xticks.append(f'{l}\n{y_pred_count[l]}')
+        except : 
+            yticks.append(f'{l}\n{0}/{y_total[l]}')
+            #xticks.append(f'{l}\n{0}')
+    if(ax=='self'):
+        fig , ax = plt.subplots(nrows=1 , ncols=1 , figsize = (7,6))
+    acc = accuracy_score(y_true , y_pred)
+    cmap = 'rocket_r'
+    if(plot_dict['plot_num']):
+        sns.heatmap(cm*100 , annot=True , ax=ax ,xticklabels=labels , yticklabels=yticks , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap=cmap )
+    else:
+        sns.heatmap(cm*100 , annot=True , ax=ax ,xticklabels=labels , yticklabels=labels , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap= cmap )
+    #print(confidance , rdata['pred_prob'].min())
+    if(plot_dict['title']):
+        if(confidance < pred_min):
+            ax.set_title(f'Data : {data} | Model : {model} \n Prob Threshold : Max prob | Accuracy : {acc*100:.1f}')
+            ax.set_title(f'{label} | Prob Threshold : Max prob | Accuracy : {acc*100:.1f}')
+        else :
+            #print('in else')
+            
+            ax.set_title(label+f'Data : {data} | Model : {model} \n Prob Threshold {confidance} | Accuracy : {acc*100:.1f}')
+            #print(label)
+            ax.set_title(f'{label} | Prob Threshold {confidance} | Accuracy : {acc*100:.1f}')
+            #ax.set_title(f'Prob Threshold {confidance} | Accuracy : {acc*100:.1f}')
+    #ax.set_title(f'Accuracy : {acc*100:.1f}')
+    ax.set_ylabel('True class')
+    ax.set_xlabel('Predicted class')
+    #ax.set_yticks(rotation=0)
+    ax.tick_params(axis='y', rotation=0)
+    if save:
+        plt.savefig(f'{save}/{data}_{model}.jpg')
+
 
 
 
@@ -433,3 +492,7 @@ def feature_imp(data , model , k=-1 , return_score = 'recall' ,save_df = 0 ):
     ret['precision'] = score('precision')
     ret['recall'] = score('recall')
     return ret
+
+
+
+
