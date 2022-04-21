@@ -250,7 +250,7 @@ def softmax(arr):
     return norm_arr
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
-def simple_cv(x,y,model , k=10):
+def simple_cv(x,y,model , k=10 , normalize_prob=0):
     x_col = x.columns.to_list()
     #display(x)
     #display(y.to_frame())
@@ -273,10 +273,15 @@ def simple_cv(x,y,model , k=10):
         y_train , y_test = y.loc[train] , y.loc[test]
         model_temp = model
         model_temp.fit(x_train , y_train)
+        
+        if(normalize_prob):
+            prob = norm_prob(model_temp.predict_proba(x_test))
+        else:
+            prob = model_temp.predict_proba(x_test)
         df = pd.DataFrame({
             'true_class' : y_test , 
             'pred_class' : model_temp.predict(x_test) , 
-            'pred_prob' : [np.amax(el) for el in norm_prob(model_temp.predict_proba(x_test))]
+            'pred_prob' : [np.amax(el) for el in prob]
             })  
         df_all.append(df)
     #score_dict = get_score([df])
