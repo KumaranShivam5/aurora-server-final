@@ -83,14 +83,14 @@
 
 | class   |   recall_score |   precision_score |   f1_score |
 |:--------|---------------:|------------------:|-----------:|
-| AGN     |       0.971608 |          0.969583 |   0.970594 |
-| CV      |       0.566265 |          0.630872 |   0.596825 |
-| HMXB    |       0.909091 |          0.915209 |   0.91214  |
-| LMXB    |       0.79021  |          0.933884 |   0.856061 |
-| PULSAR  |       0.475248 |          0.432432 |   0.45283  |
-| STAR    |       0.956631 |          0.959382 |   0.958004 |
-| ULX     |       0.720379 |          0.703704 |   0.711944 |
-| YSO     |       0.950392 |          0.92464  |   0.937339 |
+| AGN     |       0.974948 |          0.969282 |   0.972107 |
+| CV      |       0.560241 |          0.607843 |   0.583072 |
+| HMXB    |       0.898396 |          0.915531 |   0.906883 |
+| LMXB    |       0.811189 |          0.943089 |   0.87218  |
+| PULSAR  |       0.544554 |          0.466102 |   0.502283 |
+| STAR    |       0.95448  |          0.95964  |   0.957053 |
+| ULX     |       0.725118 |          0.689189 |   0.706697 |
+| YSO     |       0.944299 |          0.928144 |   0.936152 |
 </td>
 <td>
     <ul>
@@ -109,16 +109,203 @@
 <table><tr>
 <td>
 
-|   Class     |   Number of sources |
+|        |   class |
 |:-------|--------:|
-| AGN    |    7567 |
-| STAR   |    7196 |
-| YSO    |    6074 |
-| HMXB   |    1551 |
-| ULX    |     754 |
-| CV     |     569 |
-| PULSAR |     394 |
-| LMXB   |     156 |
+| STAR   |    7745 |
+| AGN    |    7371 |
+| YSO    |    6069 |
+| HMXB   |    1675 |
+| ULX    |     760 |
+| CV     |     555 |
+| PULSAR |     419 |
+| LMXB   |     151 |
 </td>
 <td><img src = '../plots/higher_models/lbg_unid_prob.jpg'></td>
+</tr></table>
+
+
+
+
+
+
+
+# GB
+## Confusion matrix
+
+
+<table><tr>
+<td>
+<img src='../plots/higher_models/GB.jpg'>
+</td>
+<td><img src='../plots/higher_models/GB_prob.jpg'></td>
+</tr></table>
+
+
+
+## Scores 
+
+
+<table><tr>
+<td>
+
+| class   |   recall_score |   precision_score |   f1_score |
+|:--------|---------------:|------------------:|-----------:|
+| AGN     |       0.896451 |          0.978578 |   0.935716 |
+| CV      |       0.584337 |          0.40249  |   0.476658 |
+| HMXB    |       0.874332 |          0.841699 |   0.857705 |
+| LMXB    |       0.804196 |          0.793103 |   0.798611 |
+| PULSAR  |       0.594059 |          0.28436  |   0.384615 |
+| STAR    |       0.912545 |          0.972127 |   0.941394 |
+| ULX     |       0.744076 |          0.468657 |   0.575092 |
+| YSO     |       0.935596 |          0.910246 |   0.922747 |
+</td>
+<td>
+    <ul>
+        <li> Accuracy - 0.889
+        <li> Precision - 0.91
+        <li> Recall - 0.89
+        <li> f1 score - 0.90
+    </ul>
+</td>
+</tr></table>
+
+
+## On unidentified dataset 
+
+> Number of sources : 39893
+
+<table><tr>
+<td>
+
+|   Class     |   Number of sources |
+|:-------|--------:|
+| STAR   |    4921 |
+| AGN    |    3624 |
+| YSO    |    2611 |
+| HMXB   |     574 |
+| LMXB   |      88 |
+| PULSAR |      48 |
+| CV     |      48 |
+| ULX    |      15 |
+</td>
+<td><img src = '../plots/higher_models/GB_unid_prob.jpg'></td>
+</tr></table>
+
+
+
+
+
+
+
+
+
+# RF Moode Tuned
+## Confusion matrix
+
+<table><tr>
+<td>
+<img src='../plots/higher_models/RF_mod_tuned.jpg'>
+</td>
+<td><img src='../plots/higher_models/RF_mod_tuned_prob.jpg'></td>
+</tr></table>
+
+## Scores 
+
+<table><tr>
+<td>
+
+| class   |   recall_score |   precision_score |   f1_score |
+|:--------|---------------:|------------------:|-----------:|
+| AGN     |       0.931942 |          0.966234 |   0.948778 |
+| CV      |       0.506024 |          0.48     |   0.492669 |
+| HMXB    |       0.824866 |          0.801299 |   0.812912 |
+| LMXB    |       0.811189 |          0.852941 |   0.831541 |
+| PULSAR  |       0.50495  |          0.31677  |   0.389313 |
+| STAR    |       0.937993 |          0.96072  |   0.94922  |
+| ULX     |       0.630332 |          0.507634 |   0.562368 |
+| YSO     |       0.923412 |          0.91073  |   0.917027 |
+</td>
+<td>
+    <ul>
+        <li> Accuracy - 0.89
+        <li> Precision - 0.90
+        <li> Recall - 0.89
+        <li> f1 score - 0.90
+    </ul>
+</td>
+</tr></table>
+
+
+## On unidentified dataset 
+
+> Number of sources : 39893
+
+<table><tr>
+<td>
+
+|   Class     |   Number of sources |
+|:-------|--------:|
+| STAR |    1095 |
+| HMXB |     272 |
+| CV   |       7 |
+| LMXB |       5 |
+| YSO  |       1 |
+| AGN  |       1 |
+</td>
+<td><img src = '../plots/higher_models/RF_mod_tuned_unid_prob.jpg'></td>
+</tr></table>
+
+
+
+
+# RF rfimp Tuned
+## Confusion matrix
+
+<table><tr>
+<td>
+<img src='../plots/higher_models/RF_rfimp_tuned.jpg'>
+</td>
+<td><img src='../plots/higher_models/RF_rfimp_tuned_prob.jpg'></td>
+</tr></table>
+
+## Scores 
+
+<table><tr>
+<td>
+
+| class   |   recall_score |   precision_score |   f1_score |
+|:--------|---------------:|------------------:|-----------:|
+| AGN     |       0.924008 |          0.953879 |   0.938706 |
+| CV      |       0.518072 |          0.457447 |   0.485876 |
+| HMXB    |       0.791444 |          0.766839 |   0.778947 |
+| LMXB    |       0.776224 |          0.925    |   0.844106 |
+| PULSAR  |       0.415842 |          0.330709 |   0.368421 |
+| STAR    |       0.937276 |          0.952988 |   0.945067 |
+| ULX     |       0.540284 |          0.445312 |   0.488223 |
+| YSO     |       0.926023 |          0.904762 |   0.915269 |
+</td>
+<td>
+    <ul>
+        <li> Accuracy - 0.89
+        <li> Precision - 0.89
+        <li> Recall - 0.89
+        <li> f1 score - 0.89
+    </ul>
+</td>
+</tr></table>
+
+
+## On unidentified dataset 
+
+> Number of sources : 39893
+
+<table><tr>
+<td>
+
+|   Class     |   Number of sources |
+|:-------|--------:|
+| AGN  |    3310 |
+| STAR |     118 |
+</td>
+<td><img src = '../plots/higher_models/RF_rfimp_tuned_unid_prob.jpg'></td>
 </tr></table>

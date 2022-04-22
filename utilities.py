@@ -350,6 +350,7 @@ def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=Fa
     })
     temp_df = temp_df.sort_values(by='diag' , ascending=False)
     labels = temp_df['class']
+    labels = ['AGN' ,'STAR' ,'YSO', 'HMXB' , 'LMXB','ULX','CV', 'PULSAR']
     cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
     for l in labels:
         try:

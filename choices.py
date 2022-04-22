@@ -10,7 +10,14 @@ model_dict = {
 }
 
 import numpy as np
-def get_train_data(flags , classes , offset = -1 , sig = 0, deets=0 , file = None ,ret_id_cols = ['class']):
+flag = {
+    'conf_flag' : 0 , 
+    'streak_src_flag' : 0 , 
+    'extent_flag' : 0 , 
+    'pileup_flag' : 0 , 
+    }
+classes =['AGN' ,'YSO' ,'STAR' ,'HMXB' ,'LMXB' ,'ULX' ,'CV' ,'PULSAR']
+def get_train_data(flags=flag , classes=classes , offset = -1 , sig = 0, deets=0 , file = None ,ret_id_cols = ['class']):
     #print(flags)
     data_id = pd.read_csv('compiled_data_v3/id_frame.csv' , index_col='name')
     id_col = data_id.columns.to_list()
