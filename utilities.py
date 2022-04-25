@@ -174,7 +174,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
             'recall' : recall
         })
         ret['pr_score'] = pr
-    mem_table = pd.concat([el[1] for el in res_a]).drop(columns='name')
+    mem_table = pd.concat([el[1] for el in res_a])
     ra_score = roc_auc_score(res_df['true_class'] , mem_table , multi_class='ovr' , average = 'weighted') 
     if(return_dict['roc_auc_score']):
         ret['roc-auc'] = ra_score
