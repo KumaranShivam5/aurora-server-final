@@ -5,15 +5,16 @@ from IPython.display import display
 from tqdm import tqdm_notebook
 import tqdm
 import seaborn as sns
-
+from choices import param_dict
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import  IterativeImputer 
 from sklearn.impute import SimpleImputer , KNNImputer
 from sklearn.preprocessing import Normalizer
+from sklearn.ensemble import GradientBoostingClassifier
 sns.set(font_scale=1.3, rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':True} , style="whitegrid")
 # 
 feat_to_drop = param_dict['hardness']+param_dict['IRAC']
-%%time
+
 from utilities import deets
 from choices import get_train_data , param_dict
 classes = ['AGN' ,'STAR' , 'YSO' ,  'CV' , 'LMXB' , 'HMXB' ,'ULX','PULSAR']
@@ -37,7 +38,7 @@ ret_dict= {
 gb = GradientBoostingClassifier()
 
 
-d = 'mode'
+d = '1iter_rfimp'
 model_name = ''
 model = gb 
 
