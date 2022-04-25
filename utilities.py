@@ -286,8 +286,10 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0):
     df = df.sample(frac=1)
     x = df[x_col] 
     y = df['class']
-    x = x.reset_index(drop=True) 
+    n = df.index.to_series().reset_index(drop=True)
+    x = x.reset_index(drop=True)
     y = y.reset_index(drop=True)
+    n = n.reset_index(drop=True)
     cv_split = StratifiedKFold(k)
     i=0
     df_all = []
@@ -299,18 +301,25 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0):
 
         x_train , x_test = x.loc[train , :] , x.loc[test , :]
         y_train , y_test = y.loc[train] , y.loc[test]
+        n_test = n.loc[test]
         model_temp = model
         model_temp.fit(x_train , y_train)
         
         if(normalize_prob):
+            print('[INFO] Normaliszing Probability')
             prob = norm_prob(model_temp.predict_proba(x_test))
         else:
             prob = model_temp.predict_proba(x_test)
         df = pd.DataFrame({
+            'name' : n_test ,
             'true_class' : y_test , 
             'pred_class' : model_temp.predict(x_test) , 
             'pred_prob' : [np.amax(el) for el in prob]
-            })  
+            }).set_index('name')
+        col = [f'prob_{el}' for el in model_temp.classes_]
+        prob_df = pd.DataFrame(model_temp.predict_proba(x_test) , columns=col , index=n_test)
+        #display(prob_df)
+        df = pd.merge(df , prob_df , left_index=True , right_index=True)
         df_all.append(df)
     #score_dict = get_score([df])
     #score_dict['res_table'] = df  
