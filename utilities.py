@@ -1,7 +1,7 @@
-from cProfile import label
-from random import randrange
-from sre_compile import isstring
-from turtle import Turtle
+#from cProfile import label
+#from random import randrange
+#from sre_compile import isstring
+#from turtle import Turtle
 #from turtle import title
 from IPython.display import display 
 import numpy as np 
@@ -144,10 +144,10 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
         num_cores = mp.cpu_count()
         with mp.Pool(int(num_cores)) as pool:
             if(k==-1):
-                res_a = pool.map(train_model_loo , arr) 
+                res = pool.map(train_model_loo , arr) 
             else: 
-                res_a = pool.map(train_model_kfold , arr) 
-        res = [el[0] for el in res_a]
+                res = pool.map(train_model_kfold , arr) 
+        #res = [el for el in res_a]
     else:
         res = []
         for a in tqdm(arr):
