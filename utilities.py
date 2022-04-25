@@ -7,6 +7,7 @@ from IPython.display import display
 import numpy as np 
 import pandas as pd
 from sklearn.model_selection import train_test_split , LeaveOneOut , KFold ,StratifiedKFold
+from tqdm import tqdm
 def deets(df ,class_info = 0 ,dsp=0):
     print('_____________________________________________________')
     if(dsp):
@@ -76,9 +77,9 @@ def train_model_kfold(arr):
     x_test = x_test.reset_index(drop=True)
     y_test = y_test.reset_index(drop=True)
     test_names = test_names.reset_index(drop=True)
-    display(test_names)
-    display(y_test)
-    display(x_test)
+    #display(test_names)
+    #display(y_test)
+    #display(x_test)
     #display(x_train.head(10) , y_train.head(10))
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
@@ -115,7 +116,7 @@ ret_dict =  {
     #'recall' : True ,
 }
 
-def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
+def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiprocessing= 1 ):
     d_name = data['name']
     m_name = model['name']
     if(type(data['data'])==str):
@@ -137,17 +138,19 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
     arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_name]*len(index)))
-    # import multiprocessing as mp 
-    # num_cores = mp.cpu_count()
-    # with mp.Pool(int(num_cores)) as pool:
-    #     if(k==-1):
-    #         res_a = pool.map(train_model_loo , arr) 
-    #     else: 
-    #         res_a = pool.map(train_model_kfold , arr) 
-    res = []
-    for a in arr:
-        res.append(train_model_kfold(a))
-    #res = [el[0] for el in res_a]
+    if(multiprocessing):
+        import multiprocessing as mp 
+        num_cores = mp.cpu_count()
+        with mp.Pool(int(num_cores)) as pool:
+            if(k==-1):
+                res_a = pool.map(train_model_loo , arr) 
+            else: 
+                res_a = pool.map(train_model_kfold , arr) 
+        res = [el[0] for el in res_a]
+    else:
+        res = []
+        for a in tqdm(arr):
+            res.append(train_model_kfold(a))
 
     if k==-1 :
         res_df  = pd.DataFrame({
@@ -159,10 +162,10 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         if(save_df):
             res_df.to_csv(f'validation_res/{d_name}_{m_name}_loo.csv')
     else:
-        res_df = pd.concat(res, axis=0).reset_index(drop=True)
+        res_df = pd.concat(res, axis=0)
         #display(res_df)
         if(save_df):
-            res_df.to_csv(f'validation_res/{d_name}_{m_name}_{k}_fold.csv')
+            res_df.to_csv(f'{save_df}')
     acc_sc = accuracy_score(res_df['true_class'] , res_df['pred_class'])
 
     print(f'Overall Accuracy : {acc_sc}')
