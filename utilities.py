@@ -70,6 +70,7 @@ def train_model_kfold(arr):
     train_ix , test_ix = index[0] , index[1]
     x_train , x_test = x.loc[train_ix , : ] , x.loc[test_ix, :]
     y_train , y_test = y.loc[train_ix] , y.loc[test_ix]
+    display(x_test)
     #display(x_train.head(10) , y_train.head(10))
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
@@ -175,7 +176,8 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
             'recall' : recall
         })
         ret['pr_score'] = pr
-    mem_table = pd.concat([el[1] for el in res_a]).reset_index(drop=True)
+    mem_table = pd.concat([el[1] for el in res_a])#.reset_index(drop=True)
+    display(mem_table)
     #mem_table.insert(0 , 'name' , x_index)
     mem_table = mem_table.set_index('name')
     ra_score = roc_auc_score(res_df['true_class'] , mem_table , multi_class='ovr' , average = 'weighted') 
