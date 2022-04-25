@@ -91,6 +91,7 @@ def train_model_kfold(arr):
     else:
         clf = model['model']
     clf.fit(x_train_up , y_train_up)
+    #print("")
     #clf.fit(x_train , y_train)
     df = pd.DataFrame({
         'name' : test_names , 
@@ -130,7 +131,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
     x= x.drop(columns=['class' , 'name'])
 
     if k==-1:
-        print('Doing LeaveOneOut cross-validation')
+        print('[INFO] Doing LeaveOneOut cross-validation')
         cv = LeaveOneOut()
     else:
         print(f'Doing {k} fold cross-validation')
@@ -168,19 +169,22 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
             res_df.to_csv(f'{save_df}')
     acc_sc = accuracy_score(res_df['true_class'] , res_df['pred_class'])
 
-    print(f'Overall Accuracy : {acc_sc}')
+    print(f'[RESULT] Overall Accuracy : {acc_sc :.2f}')
     ret = {}
+    if(return_dict['prob_table']):
+        print("[INFO] Validation probability table is available as ['prob_table'] in response")
+        ret['prob_table'] = res_df
     if(return_dict['clf']):
         if(type(model['model'])==str):
             clf = model_dict[model['model']]
         else: 
             clf = model['model']
-        print('>>> Training the final classifier')
-        print('>>> Classifier is : ' , clf)
+        print(f'>>> Training the final classifier {clf}')
+        #print('>>> Classifier is : ' , clf)
         clf.fit(x,y)
         ret['clf'] = clf
-    if(return_dict['prob_table']):
-        ret['prob_table'] = res_df
+        print("[DONE] Classifier is trained | acces via ['clf'] in the response")
+
     if(return_dict['acc']): ret['acc'] = accuracy_score(res_df['true_class'] , res_df['pred_class'])
     if(return_dict['precision']): ret['precision'] = precision_score(res_df['true_class'] , res_df['pred_class'] , average='macro')
     if(return_dict['recall']): ret['recall'] = recall_score(res_df['true_class'] , res_df['pred_class'],  average='macro')
