@@ -66,9 +66,10 @@ def train_model_loo(arr):
     return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
 
 def train_model_kfold(arr):
-    model , x ,y , index = arr
-    train_ix , test_ix = index[0] , index[1]
+    model , x ,y , index , names = arr
+    train_ix , test_ix  , = index[0] , index[1]
     x_train , x_test = x.loc[train_ix , : ] , x.loc[test_ix, :]
+    test_names = names.iloc[test_ix]
     y_train , y_test = y.loc[train_ix] , y.loc[test_ix]
     display(x_test)
     #display(x_train.head(10) , y_train.head(10))
@@ -88,9 +89,8 @@ def train_model_kfold(arr):
         'pred_class' : clf.predict(x_test) , 
         'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
     })
-    n_list = x_test.index.to_list()
     mem_table = pd.DataFrame(clf.predict_proba(x_test) , columns=clf.classes_)
-    mem_table.insert(0 , 'name' , n_list)
+    mem_table.insert(0 , 'name' , test_names)
     return df , mem_table
 
 
@@ -111,7 +111,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         x = data_dict[data['data']]
     else : x = data['data']
     x = x.sample(frac=1)
-    x_index = x.index.to_list()
+    x_index = pd.Series(x.index.to_list())
     x = x.reset_index(drop=True)
     y = x['class']
     x= x.drop(columns=['class'])
@@ -124,7 +124,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         cv = StratifiedKFold(k)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
-    arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index))
+    arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_index]*len(index)))
     import multiprocessing as mp 
     num_cores = mp.cpu_count()
     with mp.Pool(int(num_cores)) as pool:
