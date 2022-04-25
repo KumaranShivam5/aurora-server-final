@@ -1,6 +1,7 @@
 from cProfile import label
 from random import randrange
 from sre_compile import isstring
+from turtle import Turtle
 #from turtle import title
 from IPython.display import display 
 import numpy as np 
@@ -72,8 +73,12 @@ def train_model_kfold(arr):
     test_names = names.loc[test_ix]
     y_train , y_test = y.loc[train_ix] , y.loc[test_ix]
     #display(x_test)
+    x_test = x_test.reset_index(drop=True)
+    y_test = y_test.reset_index(drop=True)
+    test_names = test_names.reset_index(drop=True)
     display(test_names)
     display(y_test)
+    display(x_test)
     #display(x_train.head(10) , y_train.head(10))
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
@@ -87,14 +92,17 @@ def train_model_kfold(arr):
     clf.fit(x_train_up , y_train_up)
     #clf.fit(x_train , y_train)
     df = pd.DataFrame({
+        'name' : test_names , 
         'true_class' : y_test , 
         'pred_class' : clf.predict(x_test) , 
         'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
-    })
-    mem_table = pd.DataFrame(clf.predict_proba(x_test) , columns=clf.classes_)
+    }).set_index('name')
+    mem_table = pd.DataFrame(clf.predict_proba(x_test) , columns=[f'prob_{el}' for el in clf.classes_])
     mem_table.insert(0 , 'name' , test_names)
-    display(mem_table)
-    return df , mem_table
+    mem_table = mem_table.set_index('name')
+    df = pd.merge(df , mem_table , left_index=True , right_index=True)
+    #display(mem_table)
+    return df
 
 
 ret_dict =  {
@@ -117,6 +125,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
     x = x.reset_index()
     x_name = x['name']
     y = x['class']
+    classes = y.unique()
     x= x.drop(columns=['class' , 'name'])
 
     if k==-1:
@@ -135,10 +144,10 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
     #         res_a = pool.map(train_model_loo , arr) 
     #     else: 
     #         res_a = pool.map(train_model_kfold , arr) 
-    res_a = []
+    res = []
     for a in arr:
-        res_a.append(train_model_kfold(a))
-    res = [el[0] for el in res_a]
+        res.append(train_model_kfold(a))
+    #res = [el[0] for el in res_a]
 
     if k==-1 :
         res_df  = pd.DataFrame({
@@ -182,14 +191,15 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
             'recall' : recall
         })
         ret['pr_score'] = pr
-    mem_table = pd.concat([el[1] for el in res_a])#.reset_index(drop=True)
-    display(mem_table)
-    #mem_table.insert(0 , 'name' , x_index)
-    mem_table = mem_table.set_index('name')
-    ra_score = roc_auc_score(res_df['true_class'] , mem_table , multi_class='ovr' , average = 'weighted') 
+    # mem_table = pd.concat([el[1] for el in res_a])#.reset_index(drop=True)
+    # display(mem_table)
+    # #mem_table.insert(0 , 'name' , x_index)
+    # mem_table = mem_table.set_index('name')
+    mem_columns = [f'prob_{el}' for el in classes]
+    ra_score = roc_auc_score(res_df['true_class'] , res_df[mem_columns] , multi_class='ovr' , average = 'weighted') 
     if(return_dict['roc_auc_score']):
         ret['roc-auc'] = ra_score
-    return ret , mem_table 
+    return ret
 
 def get_score(arr , k=-1,confidance=0):
     if(len(arr)==1):
