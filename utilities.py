@@ -69,9 +69,11 @@ def train_model_kfold(arr):
     model , x ,y , index , names = arr
     train_ix , test_ix  , = index[0] , index[1]
     x_train , x_test = x.loc[train_ix , : ] , x.loc[test_ix, :]
-    test_names = names.iloc[test_ix]
+    test_names = names.loc[test_ix]
     y_train , y_test = y.loc[train_ix] , y.loc[test_ix]
-    display(x_test)
+    #display(x_test)
+    display(test_names)
+    display(y_test)
     #display(x_train.head(10) , y_train.head(10))
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
@@ -91,6 +93,7 @@ def train_model_kfold(arr):
     })
     mem_table = pd.DataFrame(clf.predict_proba(x_test) , columns=clf.classes_)
     mem_table.insert(0 , 'name' , test_names)
+    display(mem_table)
     return df , mem_table
 
 
@@ -120,18 +123,21 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         print('Doing LeaveOneOut cross-validation')
         cv = LeaveOneOut()
     else:
-        print(f'Doing {k} fold cross-validation.')
+        print(f'Doing {k} fold cross-validation')
         cv = StratifiedKFold(k)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
     arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_name]*len(index)))
-    import multiprocessing as mp 
-    num_cores = mp.cpu_count()
-    with mp.Pool(int(num_cores)) as pool:
-        if(k==-1):
-            res_a = pool.map(train_model_loo , arr) 
-        else: 
-            res_a = pool.map(train_model_kfold , arr) 
+    # import multiprocessing as mp 
+    # num_cores = mp.cpu_count()
+    # with mp.Pool(int(num_cores)) as pool:
+    #     if(k==-1):
+    #         res_a = pool.map(train_model_loo , arr) 
+    #     else: 
+    #         res_a = pool.map(train_model_kfold , arr) 
+    res_a = []
+    for a in arr:
+        res_a.append(train_model_kfold(a))
     res = [el[0] for el in res_a]
 
     if k==-1 :
@@ -183,7 +189,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
     ra_score = roc_auc_score(res_df['true_class'] , mem_table , multi_class='ovr' , average = 'weighted') 
     if(return_dict['roc_auc_score']):
         ret['roc-auc'] = ra_score
-    return ret , mem_table , x_index
+    return ret , mem_table 
 
 def get_score(arr , k=-1,confidance=0):
     if(len(arr)==1):
