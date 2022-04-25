@@ -111,10 +111,10 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         x = data_dict[data['data']]
     else : x = data['data']
     x = x.sample(frac=1)
-    x_index = pd.Series(x.index.to_list())
-    x = x.reset_index(drop=True)
+    x = x.reset_index()
+    x_name = x['name']
     y = x['class']
-    x= x.drop(columns=['class'])
+    x= x.drop(columns=['class' , 'name'])
 
     if k==-1:
         print('Doing LeaveOneOut cross-validation')
@@ -124,7 +124,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict ,save_df = 0 ):
         cv = StratifiedKFold(k)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
-    arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_index]*len(index)))
+    arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_name]*len(index)))
     import multiprocessing as mp 
     num_cores = mp.cpu_count()
     with mp.Pool(int(num_cores)) as pool:
