@@ -290,7 +290,7 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0):
     x = x.reset_index(drop=True)
     y = y.reset_index(drop=True)
     n = n.reset_index(drop=True)
-    cv_split = StratifiedKFold(k , random_state=42 , shuffle=True)
+    cv_split = StratifiedKFold(k , shuffle=True)
     i=0
     df_all = []
     for train,test in (cv_split.split(x,y)):
