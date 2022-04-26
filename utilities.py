@@ -295,9 +295,9 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0):
     df_all = []
     for train,test in (cv_split.split(x,y)):
         i+=1
-        print('----------------------------------------------------------')
-        print(f'GOING for {i} / {k} Iteration FOLD')
-        print('___________________________________________________________')
+        #print('----------------------------------------------------------')
+        print(f'>>> GOING for {i} / {k} Iteration FOLD')
+        #print('___________________________________________________________')
 
         x_train , x_test = x.loc[train , :] , x.loc[test , :]
         y_train , y_test = y.loc[train] , y.loc[test]
