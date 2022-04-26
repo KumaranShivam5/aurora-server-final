@@ -290,7 +290,7 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0):
     x = x.reset_index(drop=True)
     y = y.reset_index(drop=True)
     n = n.reset_index(drop=True)
-    cv_split = StratifiedKFold(k)
+    cv_split = StratifiedKFold(k , random_state=42 , shuffle=True)
     i=0
     df_all = []
     for train,test in (cv_split.split(x,y)):
@@ -306,7 +306,7 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0):
         model_temp.fit(x_train , y_train)
         
         if(normalize_prob):
-            print('[INFO] Normaliszing Probability')
+            print('[INFO] Normalising Probability')
             prob = norm_prob(model_temp.predict_proba(x_test))
         else:
             prob = model_temp.predict_proba(x_test)
