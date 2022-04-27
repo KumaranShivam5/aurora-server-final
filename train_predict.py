@@ -87,5 +87,9 @@ u_df
 ##### CHANGE HERE ######
 u_df.to_csv('temp_res_comp/unid_prob/GB_mode.csv')
 tend = time.time()
+<<<<<<< HEAD
 delt = (tend-tstart)/60 
+=======
+delt = (tstart - tend)/60 
+>>>>>>> 282800e5faa41cb515a6c7eb059ae376b96e7cba
 print(f'time : {delt :.2f}') 
