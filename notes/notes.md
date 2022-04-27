@@ -27,3 +27,5 @@ Compared to Random Forest, Gradient Boosted trees can learn more complex decisio
 
 
 # How LightGBM overcomes Missing Value Issue ? 
+
+Ignores the missing values and send the sample to whichever side the loss is reduced.
