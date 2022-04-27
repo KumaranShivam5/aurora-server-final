@@ -38,8 +38,8 @@ ret_dict= {
 gb = GradientBoostingClassifier()
 
 
-d = '1iter_rfimp'
-model_name = ''
+d = 'mode'
+model_name = 'GB'
 model = gb 
 
 file = f'compiled_data_v3/imputed_data_v2/x_phot_minmax_{d}imp.csv'
