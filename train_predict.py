@@ -13,6 +13,8 @@ from sklearn.preprocessing import Normalizer
 from sklearn.ensemble import GradientBoostingClassifier
 sns.set(font_scale=1.3, rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':True} , style="whitegrid")
 # 
+import time 
+tstart = time.time()
 feat_to_drop = param_dict['hardness']+param_dict['IRAC']
 
 from utilities import deets
@@ -56,7 +58,7 @@ rf = RandomForestClassifier(n_estimators=400 , max_depth=30 , n_jobs=-1)
 res_final  = cv(
     {'data' : data , 'name' : f'data_10iter_rfimp_tuned'},   
     {'model' : model , 'name' :'GB'} , ## CHANGE HERE########################################################
-    k=10 , return_dict = ret_dict, save_df= f'temp_res_comp/train_prob/mode_GB.csv' , multiprocessing = True)
+    k=20 , return_dict = ret_dict, save_df= f'temp_res_comp/train_prob/mode_GB.csv' , multiprocessing = True)
 
 
 u = pd.read_csv('compiled_data_v3/imputed_data_v2/unid_phot_minmax__mode_imp.csv' , index_col='name').iloc[:,1:]
@@ -84,3 +86,6 @@ u_df
 
 ##### CHANGE HERE ######
 u_df.to_csv('temp_res_comp/unid_prob/GB_mode.csv')
+tend = time.time()
+delt = (tstart - tend)/60 
+print(f'time : {delt :.2f}') 
