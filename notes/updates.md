@@ -312,3 +312,35 @@
 
 
 # LightGBM classification Results 
+### Model 
+```
+LGBMClassifier(class_weight={'AGN': 1.3356883328329183, 'CV': 64.70085628321034,
+                             'HMXB': 2.527906031090322,
+                             'LMXB': 129.63681917019255,
+                             'PULSAR': 940.7398749439147,
+                             'STAR': 1.2820594649453247,
+                             'ULX': 26.616689970780907,
+                             'YSO': 1.8284347681624522},
+               force_col_wise=True, is_unbalance=True, metric=['auc_mu'],
+               num_class=8, objective='multiclassova', random_state=42,
+               sparse=True, verbosity=0)
+One vs all 
+with class weight -  w = np.exp((l / val)*0.09)
+```
+## Scores 
+
+| class   |   recall_score |   precision_score |   f1_score |
+|:--------|---------------:|------------------:|-----------:|
+| AGN     |       0.956576 |          0.975724 |   0.966055 |
+| CV      |       0.560241 |          0.481865 |   0.518106 |
+| HMXB    |       0.877005 |          0.914923 |   0.895563 |
+| LMXB    |       0.818182 |          0.92126  |   0.866667 |
+| PULSAR  |       0.544554 |          0.307263 |   0.392857 |
+| STAR    |       0.942652 |          0.969764 |   0.956016 |
+| ULX     |       0.767773 |          0.611321 |   0.680672 |
+| YSO     |       0.941688 |          0.931153 |   0.936391 |
+
+## On Non-variable sources
+
+
+
