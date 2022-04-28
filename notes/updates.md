@@ -387,4 +387,6 @@ Is it that galactic coordinates are playing way too much role? can we obtain alm
 
 
 
-![no-gal](plots/all_src_pred/lightgbm_non-var-no-gal.jpg)
+![no-gal](../plots/all_src_pred/lightgbm_non-var-no-gal.jpg)
+
+> Conclusion : Not a good idea to drop galactic coordinates.
