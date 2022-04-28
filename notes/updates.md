@@ -352,3 +352,12 @@ with class weight -  w = np.exp((l / val)*0.09)
 | CV      |    17929 |                   1283 |  8162 |  7062 |  5758 |  4588 |  3099 |   1283 |
 | YSO     |    17889 |                   5111 | 14208 | 13197 | 12006 | 10597 |  8421 |   5111 |
 | LMXB    |      578 |                    151 |   345 |   332 |   313 |   186 |   169 |    151 |
+
+
+
+now let us have a look on their distribution : 
+![src dist](../plots/all_src_pred/lightgbm_non-var.jpg)
+
+Is it that galactic coordinates are playing way too much role? can we obtain almost similar distribution without galactic coordinates?
+
+### After dropping galactic coordinates
