@@ -361,3 +361,15 @@ now let us have a look on their distribution :
 Is it that galactic coordinates are playing way too much role? can we obtain almost similar distribution without galactic coordinates?
 
 ### After dropping galactic coordinates
+
+| class   |   recall_score |   precision_score |   f1_score |
+|:--------|---------------:|------------------:|-----------:|
+| AGN     |       0.901879 |          0.957447 |   0.928833 |
+| CV      |       0.415663 |          0.285124 |   0.338235 |
+| HMXB    |       0.574866 |          0.659509 |   0.614286 |
+| LMXB    |       0.58042  |          0.419192 |   0.486804 |
+| PULSAR  |       0.425743 |          0.177686 |   0.250729 |
+| STAR    |       0.88853  |          0.935825 |   0.911565 |
+| ULX     |       0.578199 |          0.398693 |   0.471954 |
+| YSO     |       0.830287 |          0.823834 |   0.827048 |
+
