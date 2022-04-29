@@ -1,6 +1,3 @@
-# Recap
-
-\>
 
 # Issues 
 
@@ -24,9 +21,9 @@
 </tr>
 <tr><td colspan=3>Unidentified sources probability distribution</td></tr>
 <tr>
-    <td><img src='../temp_res_comp/unid_prob_dist/RF_mode.jpg'></td>
-    <td><img src='../temp_res_comp/unid_prob_dist/GB_mode.jpg'></td>
-    <td><img src='../temp_res_comp/unid_prob_dist/lightGBM_none.jpg'></td>
+    <td><img src='../temp_res_comp/unid_prob_dist_combined/RF_mode.png'></td>
+    <td><img src='../temp_res_comp/unid_prob_dist_combined/GB_mode.png'></td>
+    <td><img src='../temp_res_comp/unid_prob_dist_combined/lightGBM_none.png'></td>
 </tr>
 <tr><td colspan=3>Unidentified sources classification numbers</td></tr>
 <tr>
@@ -60,16 +57,16 @@
 </td>
 <td>
 
-| class   |   Argmax |   0.5 |   0.9 |   MP > 0.98 |
-|:--------|---------:|------:|------:|------------:|
-| YSO     |     8972 |  8344 |  6663 |        4683 |
-| AGN     |     8926 |  7114 |  4771 |        2998 |
-| STAR    |     8551 |  7210 |  5572 |        3894 |
-| ULX     |     3436 |  2267 |  1085 |         437 |
-| CV      |     3288 |  1612 |   653 |         253 |
-| PULSAR  |     3243 |  2335 |  1437 |         732 |
-| HMXB    |     3192 |  2192 |  1411 |         907 |
-| LMXB    |      285 |   195 |   146 |         129 |
+| class   |   Argmax |   0.5 |   0.9 |
+|:--------|---------:|------:|------:|
+| YSO     |     8972 |  8344 |  6663 |
+| AGN     |     8926 |  7114 |  4771 |
+| STAR    |     8551 |  7210 |  5572 |
+| ULX     |     3436 |  2267 |  1085 |
+| CV      |     3288 |  1612 |   653 |
+| PULSAR  |     3243 |  2335 |  1437 |
+| HMXB    |     3192 |  2192 |  1411 |
+| LMXB    |      285 |   195 |   146 |
 
 </td>
 
