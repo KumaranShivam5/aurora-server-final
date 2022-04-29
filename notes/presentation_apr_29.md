@@ -111,3 +111,5 @@ Compared to Random Forest, Gradient Boosted trees can learn more complex decisio
 *   More details in the paper, still trying to understand.
 
 # $\gamma$ tuning for LightGBM class imbalance
+
+<img src = '../plots/higher_models/lightGBM_class_w_tuning.png'>
