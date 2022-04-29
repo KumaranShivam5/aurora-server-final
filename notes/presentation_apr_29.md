@@ -1,3 +1,7 @@
+# Recap
+
+\>
+
 # Issues 
 
 *   Number of sources dispropotinate for the case of Random Forest
@@ -58,5 +62,10 @@ Compared to Random Forest, Gradient Boosted trees can learn more complex decisio
 
 
 # How LightGBM improves GB
+
+*   Creates Histogram and uses the binned values
+*   A decision on which side to go for a given exmple, in the case of missing feature is decided by the side of maximum gain.
+*   More flexible hyper parameter tuning
+*   More details in the paper, still trying to understand.
 
 # $\gamma$ tuning for LightGBM class imbalance
