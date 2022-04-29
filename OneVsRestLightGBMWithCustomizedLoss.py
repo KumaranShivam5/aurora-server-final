@@ -81,7 +81,7 @@ class OneVsRestLightGBMWithCustomizedLoss:
             np.maximum(maxima, prob, out=maxima)
             argmaxima[maxima == prob] = i
 
-        return argmaxima
+        return self.label_binarizer_.inverse_transform(argmaxima)
 
     def predict_proba(self, X):
         y = np.zeros((X.shape[0], len(self.results_)))
