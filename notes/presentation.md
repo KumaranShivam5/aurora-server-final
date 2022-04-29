@@ -115,6 +115,8 @@ Earlier case once we imputed, we could use **SMOTE** for upsampling of minority 
 
 # Confident New sources 
 
+probability threshold = 0.9 
+
 > Number of sources : 39893
 
 
