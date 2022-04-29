@@ -49,7 +49,7 @@ class OneVsRestLightGBMWithCustomizedLoss:
                 val = lgb.Dataset(X_val, y_val, init_score=np.full_like(y_val, init_score_value,),
                                   reference=fit)
 
-                estimator = lgb.train(params=fit_params['fit_fit_params'],
+                estimator = lgb.train(params={},
                                       train_set=fit,
                                       valid_sets=(fit, val),
                                       valid_names=('fit', 'val'),
@@ -58,11 +58,11 @@ class OneVsRestLightGBMWithCustomizedLoss:
                                       feval=self.loss.lgb_eval,
                                       verbose_eval=True)
             else:
-                estimator = lgb.train(params=fit_params['fit_fit_params'],
+                estimator = lgb.train(params={},
                                       train_set=fit,
                                       fobj=self.loss.lgb_obj,
                                       feval=self.loss.lgb_eval,
-                                      verbose_eval=True)
+                                      verbose_eval=False)
 
         return estimator, init_score_value
 
