@@ -279,6 +279,10 @@ def softmax(arr):
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False):
+    if(focal_loss):
+        from sklearn.preprocessing import LabelEncoder 
+        le = LabelEncoder()
+        y = pd.Series(le.fit_transform(y) , index = y.index.to_list() , name='class')
     x_col = x.columns.to_list()
     #display(x)
     #display(y.to_frame())
@@ -324,10 +328,7 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False):
     #score_dict = get_score([df])
     #score_dict['res_table'] = df  
     df = pd.concat(df_all)  
-    if(focal_loss):
-        score = {}
-    else:
-        score = get_score([df])
+    score = get_score([df])
     score['res_table'] = df 
     model_temp = model 
     model_temp.fit(x,y)
