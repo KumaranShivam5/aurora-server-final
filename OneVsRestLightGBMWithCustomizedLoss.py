@@ -9,12 +9,11 @@ import lightgbm as lgb
 
 class OneVsRestLightGBMWithCustomizedLoss:
 
-    def __init__(self, loss, n_jobs=3):
+    def __init__(self, loss, n_jobs=1):
         self.loss = loss
         self.n_jobs = n_jobs
 
     def fit(self, X, y, **fit_params):
-
         self.label_binarizer_ = LabelBinarizer(sparse_output=True)
         Y = self.label_binarizer_.fit_transform(y)
         Y = Y.tocsc()
