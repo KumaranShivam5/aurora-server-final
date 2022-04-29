@@ -45,6 +45,7 @@ class OneVsRestLightGBMWithCustomizedLoss:
         else:
             fit = lgb.Dataset(X, y, init_score=np.full_like(y, init_score_value,))
             if 'eval_set' in fit_params:
+                #print('inside if')
                 val = lgb.Dataset(X_val, y_val, init_score=np.full_like(y_val, init_score_value,),
                                   reference=fit)
 
