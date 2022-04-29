@@ -314,19 +314,27 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False):
             prob = norm_prob(model_temp.predict_proba(x_test))
         else:
             prob = model_temp.predict_proba(x_test)
-        df = pd.DataFrame({
-            'name' : n_test ,
-            'true_class' : y_test , 
-            'pred_class' : model_temp.predict(x_test) , 
-            'pred_prob' : [np.amax(el) for el in prob]
-            }).set_index('name')
+        if(focal_loss):
+            df = pd.DataFrame({
+                'name' : n_test ,
+                'true_class' : le.inverse_transform(y_test) , 
+                'pred_class' : le.inverse_transform(model_temp.predict(x_test)) , 
+                'pred_prob' : [np.amax(el) for el in prob]
+                }).set_index('name')
+        else :     
+            df = pd.DataFrame({
+                'name' : n_test ,
+                'true_class' : y_test , 
+                'pred_class' : model_temp.predict(x_test) , 
+                'pred_prob' : [np.amax(el) for el in prob]
+                }).set_index('name')
         col = [f'prob_{el}' for el in model_temp.classes_]
         prob_df = pd.DataFrame(model_temp.predict_proba(x_test) , columns=col , index=n_test)
         #display(prob_df)
         df = pd.merge(df , prob_df , left_index=True , right_index=True)
         df_all.append(df)
-    #score_dict = get_score([df])
-    #score_dict['res_table'] = df  
+    score_dict = get_score([df])
+    score_dict['res_table'] = df  
     df = pd.concat(df_all)  
     score = get_score([df])
     score['res_table'] = df 
