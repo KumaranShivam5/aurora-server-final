@@ -103,13 +103,16 @@ $F(m) = F(m-1)+\eta \times -\frac{\partial L}{\partial F(m-1)}$
 Compared to Random Forest, Gradient Boosted trees can learn more complex decision boundaries.
 
 
+
+# $\gamma$ tuning for LightGBM class imbalance
+
+<img src = '../plots/higher_models/lightGBM_class_w_tuning.png'>
+
+
+
 # How LightGBM improves GB
 
 *   Creates Histogram and uses the binned values
 *   A decision on which side to go for a given exmple, in the case of missing feature is decided by the side of maximum gain.
 *   More flexible hyper parameter tuning
 *   More details in the paper, still trying to understand.
-
-# $\gamma$ tuning for LightGBM class imbalance
-
-<img src = '../plots/higher_models/lightGBM_class_w_tuning.png'>
