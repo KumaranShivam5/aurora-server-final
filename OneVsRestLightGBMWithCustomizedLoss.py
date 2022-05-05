@@ -9,9 +9,11 @@ import lightgbm as lgb
 
 class OneVsRestLightGBMWithCustomizedLoss:
 
-    def __init__(self, loss, n_jobs=1):
+    def __init__(self, loss, n_jobs=1 , class_weight = None):
         self.loss = loss
         self.n_jobs = n_jobs
+        if(class_weight):
+            self.cl_weight = class_weight
 
     def fit(self, X, y, **fit_params):
         self.label_binarizer_ = LabelBinarizer(sparse_output=True)
@@ -49,7 +51,7 @@ class OneVsRestLightGBMWithCustomizedLoss:
                 val = lgb.Dataset(X_val, y_val, init_score=np.full_like(y_val, init_score_value,),
                                   reference=fit)
 
-                estimator = lgb.train(params={'verbosity' : -1 ,},
+                estimator = lgb.train(params={'verbosity' : -1 ,'class_weight': self.cl_weight},
                                       train_set=fit,
                                       valid_sets=(fit, val),
                                       valid_names=('fit', 'val'),
@@ -59,7 +61,7 @@ class OneVsRestLightGBMWithCustomizedLoss:
                                       #verbose_eval=0 ,
                                       )
             else:
-                estimator = lgb.train(params={'verbosity' : -1 ,},
+                estimator = lgb.train(params={'verbosity' : -1 , 'class_weight': self.cl_weight},
                                       train_set=fit,
                                       fobj=self.loss.lgb_obj,
                                       feval=self.loss.lgb_eval,
