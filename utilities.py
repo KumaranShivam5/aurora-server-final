@@ -338,9 +338,9 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False , score_ave
     df = pd.concat(df_all)  
     score = get_score([df] , sc_average = score_average)
     score['res_table'] = df 
-    model_temp = model 
-    model_temp.fit(x,y)
-    score['clf'] = model
+    #model_temp = model 
+    #model_temp.fit(x,y)
+    #score['clf'] = model
     return score 
 
 
