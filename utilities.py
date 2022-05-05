@@ -208,7 +208,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
         ret['roc-auc'] = ra_score
     return ret
 
-def get_score(arr , k=-1,confidance=0):
+def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
     if(len(arr)==1):
         rdata = arr[0]
     else:
@@ -250,9 +250,9 @@ def get_score(arr , k=-1,confidance=0):
         'num_src' : num_src , 
         'balanced_accuracy' : balanced_accuracy_score(y_true , y_pred ) , 
         'accuracy' : accuracy_score(y_true , y_pred , ) , 
-        'precision' : precision_score(y_true , y_pred , average='weighted') , 
-        'recall' : recall_score(y_true , y_pred , average='weighted') , 
-        'f1' : f1_score(y_true , y_pred , average='weighted') , 
+        'precision' : precision_score(y_true , y_pred , average=sc_average) , 
+        'recall' : recall_score(y_true , y_pred , average=sc_average) , 
+        'f1' : f1_score(y_true , y_pred , average=sc_average) , 
         'class_scores' : pd.DataFrame({
             'class' : labels , 
             'recall_score' : recall_score(y_true , y_pred , average=None , ) , 
@@ -278,7 +278,7 @@ def softmax(arr):
     return norm_arr
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
-def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False):
+def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False , score_average = 'weighted'):
     if(focal_loss):
         from sklearn.preprocessing import LabelEncoder 
         le = LabelEncoder()
@@ -333,10 +333,10 @@ def simple_cv(x,y,model , k=10 , normalize_prob=0 , focal_loss=False):
         #display(prob_df)
         df = pd.merge(df , prob_df , left_index=True , right_index=True)
         df_all.append(df)
-    score_dict = get_score([df])
-    score_dict['res_table'] = df  
+    #score_dict = get_score([df])
+    #score_dict['res_table'] = df  
     df = pd.concat(df_all)  
-    score = get_score([df])
+    score = get_score([df] , sc_average = score_average)
     score['res_table'] = df 
     model_temp = model 
     model_temp.fit(x,y)
