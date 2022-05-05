@@ -362,7 +362,7 @@ all_cl = ['AGN' ,'STAR' , 'YSO' , 'PULSAR'  , 'CV' , 'LMXB' , 'HMXB' ,'ULX']
 
 
 
-def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=False, label  = '',plot_dict = plot_dict_def):
+def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=False, label  = '', plot_dict = plot_dict_def , normalize='true'):
     #sns.set(font_scale = plot_dict['font_scale'])
     
     sns.set(font_scale=plot_dict['font_scale'], rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':True} , style="ticks")
@@ -400,7 +400,7 @@ def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=Fa
     temp_df = temp_df.sort_values(by='diag' , ascending=False)
     labels = temp_df['class']
     labels = ['AGN' ,'STAR' ,'YSO', 'HMXB' , 'LMXB','ULX','CV', 'PULSAR']
-    cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
+    cm =  confusion_matrix(y_true , y_pred , normalize=normalize , labels = labels)
     for l in labels:
         try:
             yticks.append(f'{l}\n{y_true_count[l]}/{y_total[l]}')
@@ -412,10 +412,12 @@ def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=Fa
         fig , ax = plt.subplots(nrows=1 , ncols=1 , figsize = (7,6))
     acc = accuracy_score(y_true , y_pred)
     cmap = 'rocket_r'
+    if(normalize):
+        cm = cm*100
     if(plot_dict['plot_num']):
-        sns.heatmap(cm*100 , annot=True , ax=ax ,xticklabels=labels , yticklabels=yticks , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap=cmap )
+        sns.heatmap(cm , annot=True , ax=ax ,xticklabels=labels , yticklabels=yticks , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap=cmap )
     else:
-        sns.heatmap(cm*100 , annot=True , ax=ax ,xticklabels=labels , yticklabels=labels , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap= cmap )
+        sns.heatmap(cm , annot=True , ax=ax ,xticklabels=labels , yticklabels=labels , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap= cmap )
     #print(confidance , rdata['pred_prob'].min())
     if(plot_dict['title']):
         if(confidance < pred_min):
