@@ -413,11 +413,14 @@ def plot_cf(dataset , classes = all_cl , k=-1 , ax='self' ,confidance=0 ,save=Fa
     acc = accuracy_score(y_true , y_pred)
     cmap = 'rocket_r'
     if(normalize):
-        cm = cm*100
-    if(plot_dict['plot_num']):
-        sns.heatmap(cm , annot=True , ax=ax ,xticklabels=labels , yticklabels=yticks , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap=cmap )
+        cm = cm*100 
+        fmt = '.1f'
     else:
-        sns.heatmap(cm , annot=True , ax=ax ,xticklabels=labels , yticklabels=labels , fmt='.1f' , cbar = plot_dict['cbar'] ,cmap= cmap )
+        fmt = '.0f' 
+    if(plot_dict['plot_num']):
+        sns.heatmap(cm , annot=True , ax=ax ,xticklabels=labels , yticklabels=yticks , fmt=fmt , cbar = plot_dict['cbar'] ,cmap=cmap )
+    else:
+        sns.heatmap(cm , annot=True , ax=ax ,xticklabels=labels , yticklabels=labels , fmt=fmt , cbar = plot_dict['cbar'] ,cmap= cmap )
     #print(confidance , rdata['pred_prob'].min())
     if(plot_dict['title']):
         if(confidance < pred_min):
