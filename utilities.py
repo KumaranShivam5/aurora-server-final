@@ -249,7 +249,7 @@ def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
     score_dict = {
         'classes' : labels ,
         'num_src' : num_src , 
-        'avg_score': {
+        'avg_scores': {
             'balanced_accuracy' : balanced_accuracy_score(y_true , y_pred ) , 
             'accuracy' : accuracy_score(y_true , y_pred , ) , 
             'precision' : precision_score(y_true , y_pred , average=sc_average) , 
