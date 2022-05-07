@@ -249,11 +249,13 @@ def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
     score_dict = {
         'classes' : labels ,
         'num_src' : num_src , 
-        'balanced_accuracy' : balanced_accuracy_score(y_true , y_pred ) , 
-        'accuracy' : accuracy_score(y_true , y_pred , ) , 
-        'precision' : precision_score(y_true , y_pred , average=sc_average) , 
-        'recall' : recall_score(y_true , y_pred , average=sc_average) , 
-        'f1' : f1_score(y_true , y_pred , average=sc_average) , 
+        'avg_score': {
+            'balanced_accuracy' : balanced_accuracy_score(y_true , y_pred ) , 
+            'accuracy' : accuracy_score(y_true , y_pred , ) , 
+            'precision' : precision_score(y_true , y_pred , average=sc_average) , 
+            'recall' : recall_score(y_true , y_pred , average=sc_average) , 
+            'f1' : f1_score(y_true , y_pred , average=sc_average)
+        } , 
         #'roc_auc' : roc_auc_score(y_true , pred_prob , average = 'micro' , multi_class='ovr') ,
         'mcc' : matthews_corrcoef(y_true , y_pred),
         'class_scores' : pd.DataFrame({
