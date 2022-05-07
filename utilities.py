@@ -223,6 +223,7 @@ def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
     y_total = rdata['true_class'].value_counts().to_dict()
     #print(y_total)
     pred_min = rdata['pred_prob'].min()
+    pred_prob = rdata['pred_prob']
     rdata= rdata[rdata['pred_prob']>confidance]
     y_true = rdata['true_class']
     y_pred = rdata['pred_class']
@@ -253,7 +254,7 @@ def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
         'precision' : precision_score(y_true , y_pred , average=sc_average) , 
         'recall' : recall_score(y_true , y_pred , average=sc_average) , 
         'f1' : f1_score(y_true , y_pred , average=sc_average) , 
-        'roc_auc' : roc_auc_score(y_true , y_pred , average=sc_average) ,
+        #'roc_auc' : roc_auc_score(y_true , pred_prob , average = 'micro' , multi_class='ovr') ,
         'mcc' : matthews_corrcoef(y_true , y_pred),
         'class_scores' : pd.DataFrame({
             'class' : labels , 
