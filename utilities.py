@@ -241,7 +241,7 @@ def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
             yticks.append(f'{l}\n{0}/{y_total[l]}')
             #xticks.append(f'{l}\n{0}')
     #print(labels)
-    from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score
+    from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score , roc_auc_score , matthews_corrcoef 
     cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
     #f1 = recall_score(y_true , y_pred , average=None , )
     num_src = y_pred.value_counts().to_frame()
@@ -253,6 +253,8 @@ def get_score(arr , k=-1,confidance=0 , sc_average = 'weighted'):
         'precision' : precision_score(y_true , y_pred , average=sc_average) , 
         'recall' : recall_score(y_true , y_pred , average=sc_average) , 
         'f1' : f1_score(y_true , y_pred , average=sc_average) , 
+        'roc_auc' : roc_auc_score(y_true , y_pred , average=sc_average) ,
+        'mcc' : matthews_corrcoef(y_true , y_pred),
         'class_scores' : pd.DataFrame({
             'class' : labels , 
             'recall_score' : recall_score(y_true , y_pred , average=None , ) , 
