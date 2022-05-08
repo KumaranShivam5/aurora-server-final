@@ -592,3 +592,33 @@ def take_df_mean(arr):
     std_df = pd.DataFrame(std_mat , index = index_names , columns=col_names)
     return mean_df , std_df
 
+
+
+class make_model():
+    def __init__(self , name , clf , gamma ,x ,y):
+        self.name = name 
+        self.clf = clf 
+        self.gamma = gamma 
+        self.x = x 
+        self.y = y 
+        
+    def validate(self , fname= '' , k=10 , normalize_prob=0 , score_average = 'macro'):
+        from utilities import simple_cv
+        #self.weight = self.calc_weight(self.gamma ,self.y)
+        res = simple_cv(self.x,self.y , model=self.clf , k=k , normalize_prob=normalize_prob , score_average = score_average)
+        res['gamma'] = self.gamma 
+        #res['class_weight'] = calc_weight(slef)
+        print(res['class_scores'].to_markdown())
+        self.result = res
+        if(fname):
+            import joblib
+            joblib.dump(res , fname)
+        return self
+    
+    def train(self):
+        clf = self.clf
+        clf.fit(self.x , self.y)
+        return self
+    def save(self , fname):
+        import joblib
+        joblib.dump(self , fname)
