@@ -19,7 +19,9 @@
 Why imputation is a vey vey bad idea -- 
 
 Look at the plot of class-wise missing values 
-<img src='../final_plots/missing_features.eps'>
+
+<img src='../final_plots/missing_features.jpg'>
+
 The plot of missing class-wise missing values we see that the 
 missing values distribution across classes are somewhat peculiar. 
 Like variabilityy features are mostly availbe fox X-ray binaries
@@ -43,16 +45,20 @@ hence mode imputation just replaces all the values with a same value and thus ac
 a flag for missing properties in those column and actually improves their identification.
 
 
-When we do regression imputation this happens we do not consider any class information At certain stage we are filling the Y feature using all other features say Xi, 
-the regression basically finds a function Yi = F(Xi), 
-where Xk are features other than Y.
+When we do regression imputation this happens we do not consider any class information At certain stage we are filling the $Y$ feature using all other features say $X_i$, 
+the regression basically finds a function 
+
+$Y = F(X_i)$, 
+
+where Xk are features other than $Y$.
 and it find this function by using vales of other function
 It finds only one function that fits all the source. Now the problematic part is that
-for different class this function may be different. For example , the relation betwee UV and X-ray 
-property of 
+**for different class this function may be different, while with regression or correlation imputation we assume this function is identical for all the classes.** For the case of filling flux values in one wavelength using the values in other wavelength, we are essentially finding SED using regression with the inherent assumption that SED are  For example , the relation betwee UV and X-ray property of x-ray binaries may be completely different from AGNs. AGNs can have very different Spectral Energy Distribution than LMXB, which is also an identifying feature. Since majority are star , AGN and YSO and for them maximum UV/Optical features are available, their SED are found correctly and thus very low error in the histogram form these as they are majority sources, also the same SED is imposed on other classes as well.
 
+Regression imputation would be useful if we did imputaiotn for each class seperately. But such a ppipeline would not be application of unknown source identification. Imputation might be useful if oour task was just to fill in SED for majority AGN/star/YSO
+or fill in x-ray information for LMXB, or CVs or HMXB. But for classification.  **Do not use regression or other feature-feature correlation based imputation, if the expected dependency of features are not identical for each class**. 
 
-
+"_This case is a typical example why domain knowledge is important for Machine Learning._" -  Kumaran
 # Moving from RandomForest to Gradient Boost RF
 
 
