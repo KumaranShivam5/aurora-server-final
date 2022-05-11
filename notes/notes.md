@@ -1,3 +1,10 @@
+# Source counts
+
+* TOtal number of sources - 317167
+    * Number of convex sources  - 1299
+    * Number of compact sources - 315868
+        * Number of point sources - 296473
+            * Number after filterin - 277717
 # Why Gradient boosted trees is performing better than Random Forest
 
 [Simple Video Explanation](https://www.youtube.com/watch?v=TyvYZ26alZs)
