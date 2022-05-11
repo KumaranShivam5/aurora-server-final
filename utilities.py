@@ -593,7 +593,7 @@ def take_df_mean(arr):
     return mean_df , std_df
 
 
-def get_true_data(df_index = None , offset = 1 , significance = 0 ):
+def get_data(df_index = [] , offset = 1 , significance = 0 ):
     df = pd.read_csv('../not_on_git/mw_cat/chandra_filtered_sources.csv' , index_col = 'name')
     df_id = pd.read_csv('compiled_data_v3/id_frame.csv' , index_col='name')[['offset' , 'class']]
     off = offset + 0.01
@@ -648,14 +648,60 @@ def get_true_data(df_index = None , offset = 1 , significance = 0 ):
     df['J-H'] = df['Jmag'] - df['Hmag']
     df['J-W1'] = df['Jmag'] - df['W1mag']
     df['W1-W2'] = df['W1mag'] - df['W2mag']
-    df = df.reset_index()
-    if (df_index):
-        df_ret = df[df['name'].isin(df_index.index.to_list())]
+    df = df.drop(columns='class').reset_index()
+    if(len(df_index)>0):
+        df_ret = df[df['name'].isin(df_index.index.to_list())].set_index('name')
+        df_ret = pd.merge(df_index , df_ret , left_index=True , right_index=True)
         return df_ret
     else:
         return df
 
+def plot_feat_feat(data , xq,yq , xlabel = '' , ylabel = ''):
+    cl = [ 'STAR' , 'AGN', 'YSO' , 'HMXB' ,'LMXB' , 'CV' ,'ULX' , 'PULSAR' ]
+    fig , ax =  plt.subplots(nrows=1 , ncols=1 , figsize=(11,6) , sharey=True)
+    sns.set(font_scale=1.3, rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':False} , style="ticks")
 
+    for c in cl:
+        temp = data[data['class']==c]
+        rgba_colors = np.zeros((len(temp),3))
+        if(c=='CV'):
+            rgba_colors[:,0] = 1
+            marker='o'
+        elif(c=='AGN'):
+            rgba_colors[:,0] = 0.3
+            rgba_colors[:,1] = 0.7
+            rgba_colors[:,2] = 0.3
+            marker='^'
+        elif(c=='HMXB'):
+            rgba_colors[:,0] = 1
+            rgba_colors[:,1] = 1
+            marker='s'
+        elif(c=='STAR'):
+            #rgba_colors[:,0] = 1
+            rgba_colors[:,2] = 1
+            marker = '*'
+        elif(c=='PULSAR'):
+            rgba_colors[:,0] = 0
+            rgba_colors[:,1] = 0
+            rgba_colors[:,2] = 0
+            marker = '+'
+        elif(c=='ULX'):
+            rgba_colors[:,0] = 0
+            rgba_colors[:,1] = 1
+            rgba_colors[:,2] = 1
+            marker = 'D'
+        elif(c=='LMXB'):
+            rgba_colors[:,0] = 1
+            rgba_colors[:,1] = 0.5
+            rgba_colors[:,2] = 0.5
+            marker = 's'
+    #rgba_colors[:, 3] = temp['prob']
+        ax.scatter(temp[xq],temp[yq]  , label=c , marker=marker , color = rgba_colors)
+        ax.set_xlabel(xlabel) 
+        ax.set_ylabel(ylabel)
+        ax.legend()
+    return fig , ax 
+#plt.show()
 
 class make_model():
     def __init__(self , name , clf , gamma ,x ,y):
