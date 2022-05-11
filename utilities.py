@@ -593,6 +593,69 @@ def take_df_mean(arr):
     return mean_df , std_df
 
 
+def get_true_data(df_index = None , offset = 1 , significance = 0 ):
+    df = pd.read_csv('../not_on_git/mw_cat/chandra_filtered_sources.csv' , index_col = 'name')
+    df_id = pd.read_csv('compiled_data_v3/id_frame.csv' , index_col='name')[['offset' , 'class']]
+    off = offset + 0.01
+    df = pd.merge(df_id[df_id['offset']<off] , df , left_index=True , right_index =True , how='right')
+    sig = significance
+    df = df[df['significance']>sig]
+    df = df.drop(columns = ['significance'  , 'offset' , 'ra' , 'dec', 'var_inter_hard_flag' , 'likelihood'])
+    df = df.rename(columns = {
+        'flux_aper_b' : 'b-csc' , 
+        'flux_aper_h' : 'h-csc' ,
+        'flux_aper_m': 'm-csc' ,
+        'flux_aper_s': 's-csc' ,
+        'flux_aper_u': 'u-csc' ,
+    })
+    df['class'] = df['class'].replace(np.nan , 'X')
+    df = pd.merge(
+        df , pd.read_csv('mw_cat/sdss.csv' , index_col='name') ,
+        left_index=True , 
+        right_index = True , 
+        how = 'left'
+    )
+    df = pd.merge(
+        df , pd.read_csv('mw_cat/2mass_v2.csv' , index_col='name') ,
+        left_index=True , 
+        right_index = True , 
+        how = 'left'
+    )
+    df = pd.merge(
+        df , pd.read_csv('mw_cat/wise_combined.csv' , index_col='name') ,
+        left_index=True , 
+        right_index = True , 
+        how = 'left'
+    )
+    df = pd.merge(
+        df , pd.read_csv('mw_cat/galex_combined.csv' , index_col='name') ,
+        left_index=True , 
+        right_index = True , 
+        how = 'left'
+    )
+    df = pd.merge(
+        df , pd.read_csv('mw_cat/gaia.csv' , index_col='name') ,
+        left_index=True , 
+        right_index = True , 
+        how = 'left'
+    )
+    df['bp-R'] = df['bp_mag']-df['rp_mag']
+    df['g-J'] = df[ 'g_mag'] - df['Jmag']
+    df['g-W2'] = df['g_mag'] - df['W2mag']
+    df['bp-H'] = df['bp_mag'] - df[ 'Hmag']
+    df['bp-W3'] = df['bp_mag'] - df['W3mag']
+    df['rp-K'] = df['rp_mag'] - df['Kmag']
+    df['J-H'] = df['Jmag'] - df['Hmag']
+    df['J-W1'] = df['Jmag'] - df['W1mag']
+    df['W1-W2'] = df['W1mag'] - df['W2mag']
+    df = df.reset_index()
+    if (df_index):
+        df_ret = df[df['name'].isin(df_index.index.to_list())]
+        return df_ret
+    else:
+        return df
+
+
 
 class make_model():
     def __init__(self , name , clf , gamma ,x ,y):
