@@ -27,6 +27,10 @@ from sklearn.ensemble import RandomForestClassifier
 import pandas as pd 
 
 
+def set_plot(font_size = 1.3 , grid =False):
+    sns.set(font_scale=font_size, rc={'axes.facecolor':'white', 'figure.facecolor':'white' , 'axes.grid':grid} , style="ticks")
+
+
 def oversampling(method, X_train, y_train):
     # oversampling training dataset to mitigate for the imbalanced TD
     # default = SMOTE
