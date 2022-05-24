@@ -94,9 +94,9 @@ def train_model_kfold(arr):
         clf = model_dict[model['model']]
     else:
         clf = model['model']
-    clf.fit(x_train_up , y_train_up)
+    #clf.fit(x_train_up , y_train_up)
     #print("")
-    #clf.fit(x_train , y_train)
+    clf.fit(x_train , y_train)
     df = pd.DataFrame({
         'name' : test_names , 
         'true_class' : y_test , 
@@ -207,8 +207,8 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
     # #mem_table.insert(0 , 'name' , x_index)
     # mem_table = mem_table.set_index('name')
     mem_columns = [f'prob_{el}' for el in classes]
-    ra_score = roc_auc_score(res_df['true_class'] , res_df[mem_columns] , multi_class='ovr' , average = 'weighted') 
     if(return_dict['roc_auc_score']):
+        ra_score = roc_auc_score(res_df['true_class'] , res_df[mem_columns] , multi_class='ovr' , average = 'weighted') 
         ret['roc-auc'] = ra_score
     return ret
 
