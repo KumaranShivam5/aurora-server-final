@@ -15,8 +15,6 @@ def oversampling(method, X_train, y_train):
 
 
 
-
-
 def train_model_leave_one_out(arr):
     """
     For a sample size of N, Performs Training on N-1 samples and returns prediction on the the test sample
@@ -45,7 +43,13 @@ def train_model_leave_one_out(arr):
     clf.fit(x_train_up , y_train_up)
     return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
 
+
+
+
+
+
 def train_model_k_fold(arr):
+
     """
     For a sample size of N, and given indices of train and validation data, performs training on the train-data and does predictions on the validation data
 
@@ -53,7 +57,7 @@ def train_model_k_fold(arr):
     ----------
     arr : array
         Should contain : [model, data, label, index]
-            model : sklearn classifier model which implements fit, predict and predict_proba methods
+            clf : sklearn classifier model which implements fit, predict and predict_proba methods
         index : array of length 2 : [training_indices , test_indices]
 
     Returns
@@ -65,20 +69,23 @@ def train_model_k_fold(arr):
             pred_prob : membership probability for the predicted class
             prob_<class> : membership probability of all classes
     """
-    model , x ,y , index = arr
+
+    clf , x ,y , index = arr
     train_index , test_index  , = index[0] , index[1]
     x_train , x_test = x.iloc[train_index , : ] , x.iloc[test_index, :]
     y_train , y_test = y.iloc[train_index] , y.iloc[test_index]
+    
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
-    clf = model
     clf.fit(x_train_up , y_train_up)
+
     df = pd.DataFrame({
         'name' : x_test.index.to_list() , 
         'true_class' : y_test , 
         'pred_class' : clf.predict(x_test) , 
         'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
     }).set_index('name')
+
     membership_table = pd.DataFrame(clf.predict_proba(x_test) , columns=[f'prob_{el}' for el in clf.classes_])
     membership_table.insert(0 , 'name' , x_test.index.to_list())
     membership_table = membership_table.set_index('name')
@@ -87,7 +94,12 @@ def train_model_k_fold(arr):
 
 
 
+
+
+
+
 def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = True ):
+
     """
     Performs a cumulative cross validation 
     In standard K-fold of Leave one out cross validation, 
@@ -104,6 +116,16 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
         Number of folds for cross validation. -1 for leave one out cross vlidation
     multiprocessing : Boolean, default=True
         Select if cross validation is performed with multiprocessing or not.
+
+    Returns
+    -------
+    DataFrame 
+        columns : 
+            true_class : true class
+            pred_class : predicted class
+            pred_prob : membership probability for the predicted class
+            prob_<class> : membership probability of all classes (not available fo LeaveOneOut CV)
+
     """
 
     # Selection of Cross validation method, based on k_fold value
@@ -153,6 +175,10 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
         result_df = pd.concat(result, axis=0)
     
     return result_df
+
+
+
+
 
 
 def get_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
