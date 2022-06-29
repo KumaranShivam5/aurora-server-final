@@ -3,19 +3,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split , LeaveOneOut , KFold ,StratifiedKFold
 from tqdm import tqdm
-def deets(df ,class_info = 0 ,dsp=0):
-    print('_____________________________________________________')
-    if(dsp):
-        display(df)
-        print('_____________________________________________________')
-    print('------------------------------')
-    print(f'Number of Objects : {df.shape[0]}')
-    print(f'Number of Columns : {df.shape[1]}')
-    if(class_info):
-        print('------------------------------')
-        display(df['class'].value_counts())
-    print('_____________________________________________________')
-#df_deets(data)
 
 
 from sklearn.ensemble import RandomForestClassifier , GradientBoostingClassifier
@@ -189,18 +176,16 @@ ret_dict =  {
     #'recall' : True ,
 }
 
-def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiprocessing= 1 ):
+def cumulative_cross_validation(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiprocessing = 1 ):
     d_name = data['name']
     m_name = model['name']
     if(type(data['data'])==str):
         x = data_dict[data['data']]
     else : x = data['data']
     x = x.sample(frac=1)
-    x = x.reset_index()
-    x_name = x['name']
     y = x['class']
     classes = y.unique()
-    x= x.drop(columns=['class' , 'name'])
+    x = x.drop(columns=['class'])
 
     if k==-1:
         print('[INFO] Doing LeaveOneOut cross-validation')
@@ -210,7 +195,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
         cv = StratifiedKFold(k)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
-    arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_name]*len(index)))
+    arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index ))
     if(multiprocessing):
         import multiprocessing as mp 
         num_cores = mp.cpu_count()
