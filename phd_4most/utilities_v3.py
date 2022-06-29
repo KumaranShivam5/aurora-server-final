@@ -289,18 +289,36 @@ class make_model():
 
         Parameters
         ----------
+        k_fold :  int, default = -1
+            number of folds to be used for k-fold cross validation. Use k_fold=-1 for LeaveOneOut cross validation
+        save_predictions : Boolean
+            From the cumulative prediction, we get class membership probabilities for all the classes, which can be stroed for future use as a part of model object itsels by setting the value 'True'
+        multi_processing : Boolean
+            'True' will use multiprocessing and use all available CPU cores for cross validation.
+        score_average_type : string {'weighted' , None , 'micro' , 'macro'}, default='weighted'
+        Choose the averageing method for calcuation of overall precision, recall and f1 score.
         
         """
         validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k_fold , model=self.clf , multiprocessing=multiprocessing)
+
         if(save_predictions):
             self.validation_prediction = validation_predictions
+        # calclate validation scores
         self.validation_score = get_validation_score(validation_predictions ,  score_average_type=score_average_type)
         return self
 
     def train(self):
+        """
+        Trains the classifier with the entire training dataset provided.
+        """
         clf = self.clf
         clf.fit(self.train_data , self.label)
         return self
+
     def save(self , fname):
+        """
+        save the trained model.
+        Saves the trained classifier, validation scoress, training data and training labels (and validation predictions table, if selected) as make_model object using joblib module's dump method
+        """
         import joblib
         joblib.dump(self , fname)
