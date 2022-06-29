@@ -19,8 +19,8 @@ def oversampling(method, X_train, y_train):
     exnum = 9282948832
     # X_train.replace(np.nan, exnum, inplace=True)
     X_res, y_res = method.fit_resample(X_train, y_train)
-    res = X_res.values
-    X_res[:] = res
+    # res = X_res.values
+    # X_res[:] = res
     return X_res, y_res
 
 from imblearn.over_sampling import SMOTE
@@ -41,15 +41,16 @@ def train_model_loo(arr):
     clf.fit(x_train_up , y_train_up)
     return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
 
+from IPython.display import display
 def train_model_kfold(arr):
     model , x ,y , index = arr
-    # display(x)
+    display(x)
     train_ix , test_ix  , = index[0] , index[1]
     x_train , x_test = x.iloc[train_ix , : ] , x.iloc[test_ix, :]
     # test_names = names.loc[test_ix]
     y_train , y_test = y.iloc[train_ix] , y.iloc[test_ix]
-    x_test = x_test.reset_index(drop=True)
-    y_test = y_test.reset_index(drop=True)
+    # x_test = x_test.reset_index(drop=True)
+    # y_test = y_test.reset_index(drop=True)
     # test_names = test_names.reset_index(drop=True)
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
@@ -57,7 +58,7 @@ def train_model_kfold(arr):
     clf = model
     clf.fit(x_train , y_train)
     df = pd.DataFrame({
-        # 'name' : test_names , 
+        'name' : x_test.index.to_list() , 
         'true_class' : y_test , 
         'pred_class' : clf.predict(x_test) , 
         'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
@@ -74,10 +75,10 @@ from sklearn.model_selection import LeaveOneOut , StratifiedKFold
 def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename = '' , multiprocessing = 1 ):
 
     if k_fold==-1:
-        print('[INFO] Doing LeaveOneOut cross-validation')
+        print('[INFO] >>> Doing LeaveOneOut cross-validation')
         cv = LeaveOneOut()
     else:
-        print(f'Doing {k_fold} fold cross-validation')
+        print(f'[INFO] >>> Doing {k_fold} fold cross-validation')
         cv = StratifiedKFold(k_fold)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
@@ -97,13 +98,15 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename 
 
     if k_fold==-1 :
         res_df  = pd.DataFrame({
+            'name' : res.index.to_list() , 
             'true_class' : [el[1].iloc[0] for el in res] , 
             'pred_class' : [el[0] for el in res], 
             'pred_prob' : [np.amax(el[2] )for el in res]
-        })
+        }).set_index('name')
         if(save_result_filename):
             res_df.to_csv(f'{save_result_filename}')
     else:
+        print('doing k fold in else')
         res_df = pd.concat(res, axis=0)
         #display(res_df)
         if(save_result_filename):
@@ -121,7 +124,7 @@ class make_model():
         self.y = y 
         self.validation_prediction = 'validation predictions are not stored'
         
-    def validate(self , fname= '' , k=10 , normalize_prob=0 , score_average = 'macro' , save_predictions = ''):
+    def validate(self , fname= '' , k=10 , normalize_prob=0 , score_average = 'macro' , save_predictions = '' , multiprocessing = True):
         #from utilities import simple_cv
         #self.weight = self.calc_weight(self.gamma ,self.y)
         validation_predictions = cumulative_cross_validation(self.x,self.y ,k_fold=k , model=self.clf , multiprocessing=True)
