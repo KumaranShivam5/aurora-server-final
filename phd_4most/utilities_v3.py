@@ -1,3 +1,4 @@
+from cProfile import label
 from tqdm import tqdm 
 import numpy as np 
 import pandas as pd 
@@ -112,49 +113,32 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename 
     return res_df
 
 
-def get_score(y_true , y_pred , pred_prob , confidance=0 , sc_average = 'weighted'):
-    y_true = y_true[pred_prob>confidance]
-    y_pred = y_pred[pred_prob > confidance]
-    pred_prob = pred_prob[pred_prob>confidance]
-    y_total = rdata['true_class'].value_counts().to_dict()
-    #print(y_total)
-    pred_min = rdata['pred_prob'].min()
-    pred_prob = rdata['pred_prob']
-    rdata= rdata[rdata['pred_prob']>confidance]
-    y_true = rdata['true_class']
-    y_pred = rdata['pred_class']
+def get_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
+    pred_table = pred_table[pred_table['pred_prob']>confidance]
+    y_true = pred_table['true_class']
+    y_pred = pred_table['pred_class']
+    pred_prob = pred_table['pred_prob']
+    y_total = y_true.value_counts().to_dict()
     y_true_count = y_true.value_counts().to_dict()
     y_pred_count = y_pred.value_counts().to_dict()
-    #print(y_pred_count)
-    #labels = y_true.unique()
-    #rint(labels)
     labels = np.sort(y_true.unique())
-    xticks , yticks = [] , []
-    for l in labels:
-        try:
-            yticks.append(f'{l}\n{y_true_count[l]}/{y_total[l]}')
-            #xticks.append(f'{l}\n{y_pred_count[l]}')
-        except : 
-            yticks.append(f'{l}\n{0}/{y_total[l]}')
-            #xticks.append(f'{l}\n{0}')
-    #print(labels)
+    
     from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score , roc_auc_score , matthews_corrcoef , confusion_matrix
-    cm =  confusion_matrix(y_true , y_pred , normalize='true' , labels = labels)
-    #f1 = recall_score(y_true , y_pred , average=None , )
+    cm = confusion_matrix(y_true , y_pred , labels=labels )
     num_src = y_pred.value_counts().to_frame()
     score_dict = {
-        'classes' : labels ,
-        'num_src' : num_src , 
-        'avg_scores': {
+        'classes' : list(labels) ,
+        'confusion_matrix' : cm ,
+        'overall_scores': {
             'balanced_accuracy' : balanced_accuracy_score(y_true , y_pred ) , 
             'accuracy' : accuracy_score(y_true , y_pred , ) , 
-            'precision' : precision_score(y_true , y_pred , average=sc_average) , 
-            'recall' : recall_score(y_true , y_pred , average=sc_average) , 
-            'f1' : f1_score(y_true , y_pred , average=sc_average)
+            'precision' : precision_score(y_true , y_pred , average=score_average_type) , 
+            'recall' : recall_score(y_true , y_pred , average=score_average_type) , 
+            'f1' : f1_score(y_true , y_pred , average=score_average_type) , 
+            'mcc' : matthews_corrcoef(y_true , y_pred),
         } , 
-        #'roc_auc' : roc_auc_score(y_true , pred_prob , average = 'micro' , multi_class='ovr') ,
-        'mcc' : matthews_corrcoef(y_true , y_pred),
-        'class_scores' : pd.DataFrame({
+        # 'roc_auc' : roc_auc_score(y_true , pred_prob , average = 'micro' , multi_class='ovr') ,
+        'class_wise_scores' : pd.DataFrame({
             'class' : labels , 
             'recall_score' : recall_score(y_true , y_pred , average=None , ) , 
             'precision_score' : precision_score(y_true , y_pred , average=None , ) ,
