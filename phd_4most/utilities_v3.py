@@ -1,11 +1,11 @@
-from cProfile import label
 from tqdm import tqdm 
 import numpy as np 
 import pandas as pd 
 
 from sklearn.ensemble import RandomForestClassifier , GradientBoostingClassifier
 
-
+from sklearn.model_selection import LeaveOneOut , StratifiedKFold 
+from imblearn.over_sampling import SMOTE
 
 model_dict = {
     'RF' : RandomForestClassifier() , 
@@ -24,7 +24,7 @@ def oversampling(method, X_train, y_train):
     # X_res[:] = res
     return X_res, y_res
 
-from imblearn.over_sampling import SMOTE
+
 
 
 
@@ -33,11 +33,9 @@ def train_model_leave_one_out(arr):
     train_ix , test_ix = index[0] , index[1]
     x_train , x_test = x.loc[train_ix , : ] , x.loc[test_ix, :]
     y_train , y_test = y.loc[train_ix] , y.loc[test_ix]
-    #display(x_train.head(10) , y_train.head(10))
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
-    x_train_up = x_train_up.replace(np.nan , -100)
-    #x_test_up = x_test_up.replace(np.nan , -100)
+    # x_train_up = x_train_up.replace(np.nan , -100)
     clf = model
     clf.fit(x_train_up , y_train_up)
     return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
@@ -53,7 +51,7 @@ def train_model_k_fold(arr):
     # test_names = test_names.reset_index(drop=True)
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
-    x_train_up = x_train_up.replace(np.nan , -100)
+    # x_train_up = x_train_up.replace(np.nan , -100)
     clf = model
     clf.fit(x_train_up , y_train_up)
     df = pd.DataFrame({
@@ -70,7 +68,6 @@ def train_model_k_fold(arr):
 
 
 
-from sklearn.model_selection import LeaveOneOut , StratifiedKFold 
 def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename = '' , multiprocessing = 1 ):
 
     if k_fold==-1:
@@ -117,17 +114,13 @@ def get_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
     pred_table = pred_table[pred_table['pred_prob']>confidance]
     y_true = pred_table['true_class']
     y_pred = pred_table['pred_class']
-    pred_prob = pred_table['pred_prob']
-    y_total = y_true.value_counts().to_dict()
-    y_true_count = y_true.value_counts().to_dict()
-    y_pred_count = y_pred.value_counts().to_dict()
     labels = np.sort(y_true.unique())
     
     from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score , roc_auc_score , matthews_corrcoef , confusion_matrix
     cm = confusion_matrix(y_true , y_pred , labels=labels )
-    num_src = y_pred.value_counts().to_frame()
+
     score_dict = {
-        'classes' : list(labels) ,
+        'class_labels' : list(labels) ,
         'confusion_matrix' : cm ,
         'overall_scores': {
             'balanced_accuracy' : balanced_accuracy_score(y_true , y_pred ) , 
@@ -137,7 +130,6 @@ def get_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
             'f1' : f1_score(y_true , y_pred , average=score_average_type) , 
             'mcc' : matthews_corrcoef(y_true , y_pred),
         } , 
-        # 'roc_auc' : roc_auc_score(y_true , pred_prob , average = 'micro' , multi_class='ovr') ,
         'class_wise_scores' : pd.DataFrame({
             'class' : labels , 
             'recall_score' : recall_score(y_true , y_pred , average=None , ) , 
@@ -149,27 +141,23 @@ def get_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
 
 
 class make_model():
-    def __init__(self , name , clf , x ,y):
+    def __init__(self , name , clf , train_data ,label):
         self.name = name 
         self.clf = clf 
-        self.x = x 
-        self.y = y 
+        self.train_data = train_data
+        self.label = label
         self.validation_prediction = 'validation predictions are not stored'
         
     def validate(self , fname= '' , k=10 , normalize_prob=0 , score_average = 'macro' , save_predictions = '' , multiprocessing = True):
-        #from utilities import simple_cv
-        #self.weight = self.calc_weight(self.gamma ,self.y)
-        validation_predictions = cumulative_cross_validation(self.x,self.y ,k_fold=k , model=self.clf , multiprocessing=True)
+        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k , model=self.clf , multiprocessing=multiprocessing)
         if(save_predictions):
             self.validation_prediction = validation_predictions
-        # if(fname):
-        #     import joblib
-        #     joblib.dump(res , fname)
+        self.validation_score = get_score(validation_predictions)
         return self
-    
+
     def train(self):
         clf = self.clf
-        clf.fit(self.x , self.y)
+        clf.fit(self.train_data , self.label)
         return self
     def save(self , fname):
         import joblib
