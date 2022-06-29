@@ -18,6 +18,20 @@ def oversampling(method, X_train, y_train):
 
 
 def train_model_leave_one_out(arr):
+    """
+    Performs Training and returns prediction on the the test indexed sample
+
+    Parameters
+    ----------
+    arr : array
+        Should contain : [model, data, label, index]
+            model : sklearn classifier model which implements fit, predict and predict_proba methods
+        index : array of length 2 : [training_indices , test_index]
+
+    Returns
+    -------
+    [predicted_class , true_class , predicted_probability]
+    """
     model , x ,y , index = arr
     train_index , test_index = index[0] , index[1]
     x_train , x_test = x.loc[train_index , : ] , x.loc[test_index, :]
