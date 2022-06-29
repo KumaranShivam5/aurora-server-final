@@ -228,7 +228,7 @@ def get_validation_score(pred_table  , confidance=0 , score_average_type = 'weig
     
     # Calculate confusion matrix
     cm = confusion_matrix(y_true , y_pred , labels=labels )
-    
+
     score_dict = {
         'class_labels' : list(labels) ,
         'confusion_matrix' : cm ,
@@ -251,6 +251,31 @@ def get_validation_score(pred_table  , confidance=0 , score_average_type = 'weig
 
 
 class make_model():
+    """
+    From a given classifier, training data and label creates classifier and stores the validation results
+
+    Attributes
+    ----------
+    name : str
+        name of the model
+    clf : sklearn classifier model object
+        Model to be used for classification. Only those models which implement fit, predict and predict_proba methods are allowed
+    train_data : Datarane
+         training data without label 
+    label : Series
+        Labels corresponding to the training data 
+    
+    Methods
+    -------
+    validate(fname= '' , k=10 , normalize_prob=0 , score_average = 'macro' , save_predictions = '' , multiprocessing = True)
+        Do the cumulative cross validation on the model, generated predictions on the training set and calculates validation scores
+    train()
+        train the classifier model in the entire training dataset
+    save(fname)
+        save the mdoel object with the classifier and validation results.
+
+    """
+
     def __init__(self , name , clf , train_data ,label):
         self.name = name 
         self.clf = clf 
@@ -258,11 +283,18 @@ class make_model():
         self.label = label
         self.validation_prediction = 'validation predictions are not stored'
         
-    def validate(self , fname= '' , k=10 , normalize_prob=0 , score_average = 'macro' , save_predictions = '' , multiprocessing = True):
-        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k , model=self.clf , multiprocessing=multiprocessing)
+    def validate(self  , k_fold=10 , save_predictions = False , multiprocessing = True , score_average_type= 'weighted'):
+        """
+        Do the cumulative cross validation on the model, generated predictions on the training set and calculates validation scores
+
+        Parameters
+        ----------
+        
+        """
+        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k_fold , model=self.clf , multiprocessing=multiprocessing)
         if(save_predictions):
             self.validation_prediction = validation_predictions
-        self.validation_score = get_validation_score(validation_predictions)
+        self.validation_score = get_validation_score(validation_predictions ,  score_average_type=score_average_type)
         return self
 
     def train(self):
