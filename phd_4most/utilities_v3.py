@@ -2,15 +2,14 @@ from tqdm import tqdm
 import numpy as np 
 import pandas as pd 
 
-from sklearn.ensemble import RandomForestClassifier , GradientBoostingClassifier
-
+from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score , matthews_corrcoef , confusion_matrix
 from sklearn.model_selection import LeaveOneOut , StratifiedKFold 
 from imblearn.over_sampling import SMOTE
 
 
 
-def oversampling(method, X_train, y_train):
-    X_res, y_res = method.fit_resample(X_train, y_train)
+def oversampling(method, x_train, y_train):
+    X_res, y_res = method.fit_resample(x_train, y_train)
     return X_res, y_res
 
 
@@ -181,15 +180,27 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
 
 
 
-def get_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
+def get_validation_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
+    """
+    Function to calculate various scores from the true labels, predicted labels and predicted probabilities using sklearn's metrics.
+
+    Parameters
+    ----------
+    pred_table : Dataframe
+        Should have the columns :
+            true_class : true class labels
+            pred_class : predicted class labels
+            pred_prob : class membership probability for the predicted class
+
+
+    """
     pred_table = pred_table[pred_table['pred_prob']>confidance]
     y_true = pred_table['true_class']
     y_pred = pred_table['pred_class']
     labels = np.sort(y_true.unique())
     
-    from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score , roc_auc_score , matthews_corrcoef , confusion_matrix
+   
     cm = confusion_matrix(y_true , y_pred , labels=labels )
-
     score_dict = {
         'class_labels' : list(labels) ,
         'confusion_matrix' : cm ,
@@ -223,7 +234,7 @@ class make_model():
         validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k , model=self.clf , multiprocessing=multiprocessing)
         if(save_predictions):
             self.validation_prediction = validation_predictions
-        self.validation_score = get_score(validation_predictions)
+        self.validation_score = get_validation_score(validation_predictions)
         return self
 
     def train(self):
