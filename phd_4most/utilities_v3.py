@@ -115,12 +115,15 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
         cv = StratifiedKFold(k_fold)# KFold(k) 
 
     # Using CV , split indices for training and validation set
+    # and creating a list of k_fold elements, with model, data and labels and corresponding indices.
     index = [(t,i) for t,i in cv.split(x,y)]
     zipped_arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index ))
     
+    # Training and validation 
+    # depending on multiprocessing selected or not.
     if(multiprocessing):
         import multiprocessing as mp 
-        num_cores = mp.cpu_count()
+        num_cores = mp.cpu_count() # selecting all available CPU cores
         with mp.Pool(int(num_cores)) as pool:
             if(k_fold==-1):
                 result = pool.map(train_model_leave_one_out , zipped_arr) 
@@ -129,9 +132,15 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
     else:
         result = []
         for a in tqdm(zipped_arr):
-            result.append(train_model_k_fold(a))
+            if(k_fold==-1):
+                result.append(train_model_leave_one_out(a))
+            else : 
+                result.append(train_model_k_fold(a))
 
     if k_fold==-1 :
+        # k_fold=-1, gives leaveOneOut cross validation
+        # train_model_leave_one_out gives predictions as list
+        # Here we convert list into pandas DataFrame
         result_df  = pd.DataFrame({
             'name' : result.index.to_list() , 
             'true_class' : [el[1].iloc[0] for el in result] , 
@@ -139,8 +148,10 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
             'pred_prob' : [np.amax(el[2] )for el in result]
         }).set_index('name')
     else:
-        print('doing k fold in else')
+        # in case of K_fold cross validation : train_model_k_fold returns predictions 
+        # as dataframe and hence we only need to concat them.
         result_df = pd.concat(result, axis=0)
+    
     return result_df
 
 
