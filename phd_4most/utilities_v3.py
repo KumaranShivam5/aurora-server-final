@@ -182,7 +182,7 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
 
 def get_validation_score(pred_table  , confidance=0 , score_average_type = 'weighted'):
     """
-    Function to calculate various scores from the true labels, predicted labels and predicted probabilities using sklearn's metrics.
+    Function to calculate various scores from the true labels, predicted labels and predicted probabilities using sklearn's metrics. Both overall scores and class-wise scores are calculated.
 
     Parameters
     ----------
@@ -191,16 +191,44 @@ def get_validation_score(pred_table  , confidance=0 , score_average_type = 'weig
             true_class : true class labels
             pred_class : predicted class labels
             pred_prob : class membership probability for the predicted class
+    confidance : float, range : [0,1]
+        probability confidance threshold. Validation scores are calculated only for the samples for which class membership probability is more than the confidance selected.
+    score_average_type : string {'weighted' , None , 'micro' , 'macro'}, default='weighted'
+        Choose the averageing method for calcuation of overall precision, recall and f1 score.
 
+    Returns
+    -------
+    dict : 
+        keys:
+            'class_labels' 
+            'confusion_matrix' 
+            'overall_scores': dict
+                            keys : 
+                                'balanced_accuracy' , 
+                                'accuracy' ,
+                                'precision', 
+                                'recall',
+                                'f1',
+                                'mcc',
+            'class_wise_scores' : DataFrame
+                            columns : 
+                                'class'
+                                'recall_score'
+                                'precision_score' 
+                                'f1_score'
 
     """
+
+    # We select only those samples where 
+    # class membership probbility is more than given confidance
     pred_table = pred_table[pred_table['pred_prob']>confidance]
     y_true = pred_table['true_class']
     y_pred = pred_table['pred_class']
     labels = np.sort(y_true.unique())
     
-   
+    # Calculate confusion matrix
     cm = confusion_matrix(y_true , y_pred , labels=labels )
+    
     score_dict = {
         'class_labels' : list(labels) ,
         'confusion_matrix' : cm ,
