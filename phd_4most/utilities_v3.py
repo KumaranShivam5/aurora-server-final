@@ -17,18 +17,9 @@ def oversampling(method, X_train, y_train):
     # oversampling training dataset to mitigate for the imbalanced TD
     # default = SMOTE
     exnum = 9282948832
-    X_train.replace(np.nan, exnum, inplace=True)
+    # X_train.replace(np.nan, exnum, inplace=True)
     X_res, y_res = method.fit_resample(X_train, y_train)
     res = X_res.values
-
-    X_train[X_train == exnum] = np.nan
-    X_train_min = np.nanmin(X_train, axis=0)
-
-    for i in np.arange(len(res[:,0])):
-        for j in np.arange(len(res[0,:])):
-            if res[i,j] <= X_train_min[j]:
-                res[i,j] = np.nan
-                
     X_res[:] = res
     return X_res, y_res
 
@@ -51,29 +42,30 @@ def train_model_loo(arr):
     return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
 
 def train_model_kfold(arr):
-    model , x ,y , index , names = arr
+    model , x ,y , index = arr
+    # display(x)
     train_ix , test_ix  , = index[0] , index[1]
-    x_train , x_test = x.loc[train_ix , : ] , x.loc[test_ix, :]
-    test_names = names.loc[test_ix]
-    y_train , y_test = y.loc[train_ix] , y.loc[test_ix]
+    x_train , x_test = x.iloc[train_ix , : ] , x.iloc[test_ix, :]
+    # test_names = names.loc[test_ix]
+    y_train , y_test = y.iloc[train_ix] , y.iloc[test_ix]
     x_test = x_test.reset_index(drop=True)
     y_test = y_test.reset_index(drop=True)
-    test_names = test_names.reset_index(drop=True)
+    # test_names = test_names.reset_index(drop=True)
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
     x_train_up = x_train_up.replace(np.nan , -100)
     clf = model
     clf.fit(x_train , y_train)
     df = pd.DataFrame({
-        'name' : test_names , 
+        # 'name' : test_names , 
         'true_class' : y_test , 
         'pred_class' : clf.predict(x_test) , 
         'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
     }).set_index('name')
-    mem_table = pd.DataFrame(clf.predict_proba(x_test) , columns=[f'prob_{el}' for el in clf.classes_])
-    mem_table.insert(0 , 'name' , test_names)
-    mem_table = mem_table.set_index('name')
-    df = pd.merge(df , mem_table , left_index=True , right_index=True)
+    # mem_table = pd.DataFrame(clf.predict_proba(x_test) , columns=[f'prob_{el}' for el in clf.classes_])
+    # mem_table.insert(0 , 'name' , test_names)
+    # mem_table = mem_table.set_index('name')
+    # df = pd.merge(df , mem_table , left_index=True , right_index=True)
     return df
 
 
@@ -122,7 +114,7 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename 
 
 
 class make_model():
-    def __init__(self , name , clf , gamma ,x ,y):
+    def __init__(self , name , clf , x ,y):
         self.name = name 
         self.clf = clf 
         self.x = x 
@@ -130,9 +122,9 @@ class make_model():
         self.validation_prediction = 'validation predictions are not stored'
         
     def validate(self , fname= '' , k=10 , normalize_prob=0 , score_average = 'macro' , save_predictions = ''):
-        from utilities import simple_cv
+        #from utilities import simple_cv
         #self.weight = self.calc_weight(self.gamma ,self.y)
-        validation_predictions = simple_cv(self.x,self.y , model=self.clf , k=k , normalize_prob=normalize_prob , score_average = score_average)
+        validation_predictions = cumulative_cross_validation(self.x,self.y ,k_fold=k , model=self.clf , multiprocessing=True)
         if(save_predictions):
             self.validation_prediction = validation_predictions
         # if(fname):
