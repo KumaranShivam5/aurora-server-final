@@ -19,7 +19,7 @@ def oversampling(method, X_train, y_train):
 
 def train_model_leave_one_out(arr):
     """
-    Performs Training and returns prediction on the the test indexed sample
+    For a sample size of N, Performs Training on N-1 samples and returns prediction on the the test sample
 
     Parameters
     ----------
@@ -32,17 +32,39 @@ def train_model_leave_one_out(arr):
     -------
     [predicted_class , true_class , predicted_probability]
     """
-    model , x ,y , index = arr
+    clf , x ,y , index = arr
     train_index , test_index = index[0] , index[1]
     x_train , x_test = x.loc[train_index , : ] , x.loc[test_index, :]
     y_train , y_test = y.loc[train_index] , y.loc[test_index]
+
+    # Oversample the training set
     oversampler  = SMOTE(k_neighbors=4)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
-    clf = model
+    
+    #training on the upsampled data
     clf.fit(x_train_up , y_train_up)
     return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
 
 def train_model_k_fold(arr):
+    """
+    For a sample size of N, and given indices of train and validation data, performs training on the train-data and does predictions on the validation data
+
+    Parameters
+    ----------
+    arr : array
+        Should contain : [model, data, label, index]
+            model : sklearn classifier model which implements fit, predict and predict_proba methods
+        index : array of length 2 : [training_indices , test_indices]
+
+    Returns
+    -------
+    df : dataframe
+        columns : 
+            true_class : true class
+            pred_class : predicted class
+            pred_prob : membership probability for the predicted class
+            prob_<class> : membership probability of all classes
+    """
     model , x ,y , index = arr
     train_index , test_index  , = index[0] , index[1]
     x_train , x_test = x.iloc[train_index , : ] , x.iloc[test_index, :]
