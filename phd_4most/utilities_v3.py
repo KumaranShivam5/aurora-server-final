@@ -87,17 +87,37 @@ def train_model_k_fold(arr):
 
 
 
-def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename = '' , multiprocessing = 1 ):
+def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = True ):
+    """
+    Performs a cumulative cross validation 
+    In standard K-fold of Leave one out cross validation, 
+    model scores are calculated on each fold and then the average of scores are reported. 
+    In this custom version of validation, we accumulate the predictions from each folds, and then calculate the model scores.
 
+    Parameters
+    ----------
+    x : Pandas Dataframe
+        training data of size (N,M), N is number of samples, M is number of features
+    y : Pandas Series
+        Training Labels of size N
+    k_fold : int , default=-1
+        Number of folds for cross validation. -1 for leave one out cross vlidation
+    multiprocessing : Boolean, default=True
+        Select if cross validation is performed with multiprocessing or not.
+    """
+
+    # Selection of Cross validation method, based on k_fold value
     if k_fold==-1:
         print('[INFO] >>> Doing LeaveOneOut cross-validation')
         cv = LeaveOneOut()
     else:
         print(f'[INFO] >>> Doing {k_fold} fold cross-validation')
         cv = StratifiedKFold(k_fold)# KFold(k) 
-    model = model
+
+    # Using CV , split indices for training and validation set
     index = [(t,i) for t,i in cv.split(x,y)]
     zipped_arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index ))
+    
     if(multiprocessing):
         import multiprocessing as mp 
         num_cores = mp.cpu_count()
@@ -118,13 +138,9 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , save_result_filename 
             'pred_class' : [el[0] for el in result], 
             'pred_prob' : [np.amax(el[2] )for el in result]
         }).set_index('name')
-        if(save_result_filename):
-            result_df.to_csv(f'{save_result_filename}')
     else:
         print('doing k fold in else')
         result_df = pd.concat(result, axis=0)
-        if(save_result_filename):
-            result_df.to_csv(f'{save_result_filename}')
     return result_df
 
 
