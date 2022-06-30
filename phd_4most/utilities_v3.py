@@ -13,47 +13,6 @@ def oversampling(method, x_train, y_train):
     return X_res, y_res
 
 
-
-def train_model_leave_one_out(arr):
-    """
-    For a sample size of N, Performs Training on N-1 samples and returns prediction on the the test sample
-
-    Parameters
-    ----------
-    arr : array
-        Should contain : [model, data, label, index]
-            model : sklearn classifier model which implements fit, predict and predict_proba methods
-        index : array of length 2 : [training_indices , test_index]
-
-    Returns
-    -------
-    [predicted_class , true_class , predicted_probability]
-    """
-    clf , x ,y , index = arr
-    train_index , test_index = index[0] , index[1]
-    x_train , x_test = x.iloc[train_index , : ] , x.iloc[test_index, :]
-    y_train , y_test = y.iloc[train_index] , y.iloc[test_index]
-
-    # Oversample the training set
-    oversampler  = SMOTE(k_neighbors=2)
-    x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
-    
-    #training on the upsampled data
-    clf.fit(x_train_up , y_train_up)
-    df = pd.DataFrame({
-        'name' : x_test.index.to_list() , 
-        'true_class' : y_test , 
-        'pred_class' : clf.predict(x_test) , 
-        'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
-    }).set_index('name')
-    print(pred_result)
-    return pred_result
-
-
-
-
-
-
 def train_model_k_fold(arr):
 
     """
@@ -97,9 +56,6 @@ def train_model_k_fold(arr):
     membership_table = membership_table.set_index('name')
     df = pd.merge(df , membership_table , left_index=True , right_index=True)
     return df
-
-
-
 
 
 
@@ -153,32 +109,13 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
         import multiprocessing as mp 
         num_cores = mp.cpu_count() # selecting all available CPU cores
         with mp.Pool(int(num_cores)) as pool:
-            if(k_fold==-1):
-                result = pool.map(train_model_leave_one_out , zipped_arr) 
-            else: 
-                result = pool.map(train_model_k_fold , zipped_arr) 
+            result = pool.map(train_model_k_fold , zipped_arr) 
     else:
         result = []
-        for a in tqdm(zipped_arr[:1]):
-            if(k_fold==-1):
-                result.append(train_model_k_fold(a))
-            else : 
-                result.append(train_model_k_fold(a))
+        for a in tqdm(zipped_arr):
+            result.append(train_model_k_fold(a))
 
-    # if k_fold==-1 :
-    #     # k_fold=-1, gives leaveOneOut cross validation
-    #     # train_model_leave_one_out gives predictions as list
-    #     # Here we convert list into pandas DataFrame
-    #     result_df  = pd.DataFrame({
-    #         'name' : result.index.to_list() , 
-    #         'true_class' : [el[1].iloc[0] for el in result] , 
-    #         'pred_class' : [el[0] for el in result], 
-    #         'pred_prob' : [np.amax(el[2] )for el in result]
-    #     }).set_index('name')
-    # else:
-    #     # in case of K_fold cross validation : train_model_k_fold returns predictions 
-    #     # as dataframe and hence we only need to concat them.
-    #     result_df = pd.concat(result, axis=0)
+    # create dataframe from each fold's prediction dataframes
     result_df = pd.concat(result, axis=0)
     
     return result_df
@@ -284,14 +221,15 @@ class make_model():
 
     """
 
-    def __init__(self , name , clf , train_data ,label):
+    def __init__(self , name , clf , oversampler , train_data ,label):
         self.name = name 
         self.clf = clf 
         self.train_data = train_data
+        self.oversampler = oversampler
         self.label = label
         self.validation_prediction = 'validation predictions are not stored'
         
-    def validate(self  , k_fold=10 , save_predictions = False , multiprocessing = True , score_average_type= 'weighted'):
+    def validate(self  , k_fold=10  , save_predictions = False , multiprocessing = True , score_average_type= 'weighted'):
         """
         Do the cumulative cross validation on the model, generated predictions on the training set and calculates validation scores
 
@@ -307,7 +245,7 @@ class make_model():
         Choose the averageing method for calcuation of overall precision, recall and f1 score.
         
         """
-        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k_fold , model=self.clf , multiprocessing=multiprocessing)
+        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k_fold , model=self.clf ,oversampler = self.oversampler ,  multiprocessing=multiprocessing)
 
         if(save_predictions):
             self.validation_prediction = validation_predictions
