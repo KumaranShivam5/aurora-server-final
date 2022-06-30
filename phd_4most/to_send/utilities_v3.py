@@ -1,3 +1,16 @@
+"""
+Custom extension for Scickit-Learn classification model training and validation.
+This code imppements a custom version of K-fold cross validation: 
+CUmulative K-fold cross validation.
+Training, Validation, and predictions are encapsulated in the class: make_model
+This class allows the user to pass his choice of classifier, oversampler to the pipeline.
+and train and vaildate the mdoel for their own dataset. 
+The aim of this code is to make model selection and tuning easier.
+
+
+Author : Shivam Kumaran
+"""
+
 from tqdm import tqdm 
 import numpy as np 
 import pandas as pd 
@@ -44,6 +57,8 @@ def train_classifier_model(arr):
     else: 
         clf.fit(x_train , y_train)
 
+    # Putting the prediction results: predicted class and the membership probability
+    # in a DataFrame
     df = pd.DataFrame({
         'name' : x_test.index.to_list() , 
         'true_class' : y_test , 
@@ -51,10 +66,13 @@ def train_classifier_model(arr):
         'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
     }).set_index('name')
 
+    # Class membership probabilities for all classes are 
+    # arranged in tabular form and is appended to the prediction dataframe
     membership_table = pd.DataFrame(clf.predict_proba(x_test) , columns=[f'prob_{el}' for el in clf.classes_])
     membership_table.insert(0 , 'name' , x_test.index.to_list())
     membership_table = membership_table.set_index('name')
     df = pd.merge(df , membership_table , left_index=True , right_index=True)
+
     return df
 
 
