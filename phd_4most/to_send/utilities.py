@@ -334,10 +334,16 @@ oversampler = SMOTE(k_neighbors=2)
 model = make_model('test_model', clf, oversampler, x, y)
 
 # Validate model
-model.validate(save_predictions=True, multiprocessing=True, k_fold=3)
+model.validate(save_predictions=True, multiprocessing=True, k_fold=5)
 
 # Print validation result
-print(model.validation_score)
+print("Confusion Matrix: ")
+print(model.validation_score['class_labels'])
+print(model.validation_score['confusion_matrix'])
+print("Overall Scores: ")
+print(model.validation_score['overall_scores'])
+print("Class-Wise scores: ")
+print(model.validation_score['class_wise_scores'])
 
 # Once satisfied with the mdoel performance
 # train the mdoel on entire training dataset
