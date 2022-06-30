@@ -131,6 +131,7 @@ def cumulative_cross_validation(x,y, classifier, oversampler = None,  k_fold=-1,
     if(multiprocessing):
         import multiprocessing as mp 
         num_cores = mp.cpu_count() # selecting all available CPU cores
+        print(f"[INFO] >>> Using {num_cores} CPU cores")
         with mp.Pool(int(num_cores)) as pool:
             result = pool.map(train_classifier_model, zipped_arr) 
     else:
@@ -305,6 +306,8 @@ class make_model():
 
 ###################################################################
 
+"""
+
 # Example Implementation ####################
 
 from sklearn.ensemble import RandomForestClassifier
@@ -330,7 +333,7 @@ oversampler = SMOTE(k_neighbors=2)
 model = make_model('test_model', clf, oversampler, x, y)
 
 # Validate model
-model.validate(save_predictions=True, multiprocessing=False, k_fold=3)
+model.validate(save_predictions=True, multiprocessing=True, k_fold=3)
 
 # Print validation result
 print(model.validation_score)
@@ -343,3 +346,4 @@ model.train()
 model.save('model_filename.joblib')
 
 
+"""
