@@ -4,10 +4,9 @@ import pandas as pd
 
 from sklearn.metrics import accuracy_score , balanced_accuracy_score , precision_score , f1_score , recall_score , matthews_corrcoef , confusion_matrix
 from sklearn.model_selection import LeaveOneOut , StratifiedKFold 
-from imblearn.over_sampling import SMOTE
 
 
-def train_model_k_fold(arr):
+def train_classifier_model(arr):
 
     """
     For a sample size of N, and given indices of train and validation data, performs training on the train-data and does predictions on the validation data
@@ -114,11 +113,11 @@ def cumulative_cross_validation(x ,y , classifier , oversampler = None,  k_fold=
         import multiprocessing as mp 
         num_cores = mp.cpu_count() # selecting all available CPU cores
         with mp.Pool(int(num_cores)) as pool:
-            result = pool.map(train_model_k_fold , zipped_arr) 
+            result = pool.map(train_classifier_model , zipped_arr) 
     else:
         result = []
         for a in tqdm(zipped_arr):
-            result.append(train_model_k_fold(a))
+            result.append(train_classifier_model(a))
 
     # create dataframe from each fold's prediction dataframes
     result_df = pd.concat(result, axis=0)
@@ -284,7 +283,7 @@ class make_model():
 ## Example Implementation ####################
 
 # from sklearn.ensemble import RandomForestClassifier
-# clf = RandomForestClassifier()
+# from imblearn.over_sampling import SMOTE
 
 # # Assume df is the dataframe contains samples with features and class labels
 # # Class labels are stored in the column names 'class'
@@ -299,6 +298,8 @@ class make_model():
 # from utilities import make_model
 
 ## Create a new make_model object
+# clf = RandomForestClassifier()
+# oversampler = SMOTE(k_neighbors=2)
 # model = make_model('test_model',clf , x , y)
 
 ## Validate model
