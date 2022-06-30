@@ -31,11 +31,11 @@ def train_model_leave_one_out(arr):
     """
     clf , x ,y , index = arr
     train_index , test_index = index[0] , index[1]
-    x_train , x_test = x.loc[train_index , : ] , x.loc[test_index, :]
-    y_train , y_test = y.loc[train_index] , y.loc[test_index]
+    x_train , x_test = x.iloc[train_index , : ] , x.iloc[test_index, :]
+    y_train , y_test = y.iloc[train_index] , y.iloc[test_index]
 
     # Oversample the training set
-    oversampler  = SMOTE(k_neighbors=4)
+    oversampler  = SMOTE(k_neighbors=2)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
     
     #training on the upsampled data
@@ -162,8 +162,9 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
         # k_fold=-1, gives leaveOneOut cross validation
         # train_model_leave_one_out gives predictions as list
         # Here we convert list into pandas DataFrame
+        print(result)
         result_df  = pd.DataFrame({
-            'name' : result.index.to_list() , 
+            'name' : result.index().to_list() , 
             'true_class' : [el[1].iloc[0] for el in result] , 
             'pred_class' : [el[0] for el in result], 
             'pred_prob' : [np.amax(el[2] )for el in result]
@@ -322,3 +323,41 @@ class make_model():
         """
         import joblib
         joblib.dump(self , fname)
+
+
+
+
+
+###################################################################
+## Example Implementation ####################
+
+# from sklearn.ensemble import RandomForestClassifier
+# clf = RandomForestClassifier()
+
+# # Assume df is the dataframe contains samples with features and class labels
+# # Class labels are stored in the column names 'class'
+
+## Load data, features are stored in variable x and labels in variable y
+# x = df.drop(columns=['class'])
+# y = df['class']
+
+## Assume that the above script is given in file named - utilities 
+## and in the same working directory
+
+# from utilities import make_model
+
+## Create a new make_model object
+# model = make_model('test_model',clf , x , y)
+
+## Validate model
+# model.validate(save_predictions=True , multiprocessing=True  , k_fold=3)
+
+## Print validation result
+# print(model.validation_score)
+
+## Once satisfied with the mdoel performance
+## train the mdoel on entire training dataset
+# model.train()
+
+## save the mdoel
+# model.save('model_filename.joblib')
