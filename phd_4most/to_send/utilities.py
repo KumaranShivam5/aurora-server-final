@@ -4,8 +4,9 @@ This code implements a custom version of K-fold cross-validation:
 Cumulative K-fold cross-validation.
 Training, Validation, and predictions are encapsulated in the class: make_model
 This class allows the user to pass his choice of classifier 
-and oversampler to the pipeline and train and validate the model for their dataset. 
-This code aims to make the model selection and tuning easier.
+and oversampler to the pipeline and train and validate the model for their dataset.
+For training and validation over large datset the user can choose multiprocessing.  
+This code aims to make the model selection and tuning simple and efficient.
 
 
 Author : Shivam Kumaran
