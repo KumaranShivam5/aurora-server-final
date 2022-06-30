@@ -40,7 +40,14 @@ def train_model_leave_one_out(arr):
     
     #training on the upsampled data
     clf.fit(x_train_up , y_train_up)
-    return [clf.predict(x_test)[0], y_test , clf.predict_proba(x_test)]
+    df = pd.DataFrame({
+        'name' : x_test.index.to_list() , 
+        'true_class' : y_test , 
+        'pred_class' : clf.predict(x_test) , 
+        'pred_prob' : [np.amax(el) for el in clf.predict_proba(x_test)]
+    }).set_index('name')
+    print(pred_result)
+    return pred_result
 
 
 
@@ -74,7 +81,7 @@ def train_model_k_fold(arr):
     x_train , x_test = x.iloc[train_index , : ] , x.iloc[test_index, :]
     y_train , y_test = y.iloc[train_index] , y.iloc[test_index]
     
-    oversampler  = SMOTE(k_neighbors=4)
+    oversampler  = SMOTE(k_neighbors=2)
     x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
     clf.fit(x_train_up , y_train_up)
 
@@ -152,27 +159,27 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
                 result = pool.map(train_model_k_fold , zipped_arr) 
     else:
         result = []
-        for a in tqdm(zipped_arr):
+        for a in tqdm(zipped_arr[:1]):
             if(k_fold==-1):
-                result.append(train_model_leave_one_out(a))
+                result.append(train_model_k_fold(a))
             else : 
                 result.append(train_model_k_fold(a))
 
-    if k_fold==-1 :
-        # k_fold=-1, gives leaveOneOut cross validation
-        # train_model_leave_one_out gives predictions as list
-        # Here we convert list into pandas DataFrame
-        print(result)
-        result_df  = pd.DataFrame({
-            'name' : result.index().to_list() , 
-            'true_class' : [el[1].iloc[0] for el in result] , 
-            'pred_class' : [el[0] for el in result], 
-            'pred_prob' : [np.amax(el[2] )for el in result]
-        }).set_index('name')
-    else:
-        # in case of K_fold cross validation : train_model_k_fold returns predictions 
-        # as dataframe and hence we only need to concat them.
-        result_df = pd.concat(result, axis=0)
+    # if k_fold==-1 :
+    #     # k_fold=-1, gives leaveOneOut cross validation
+    #     # train_model_leave_one_out gives predictions as list
+    #     # Here we convert list into pandas DataFrame
+    #     result_df  = pd.DataFrame({
+    #         'name' : result.index.to_list() , 
+    #         'true_class' : [el[1].iloc[0] for el in result] , 
+    #         'pred_class' : [el[0] for el in result], 
+    #         'pred_prob' : [np.amax(el[2] )for el in result]
+    #     }).set_index('name')
+    # else:
+    #     # in case of K_fold cross validation : train_model_k_fold returns predictions 
+    #     # as dataframe and hence we only need to concat them.
+    #     result_df = pd.concat(result, axis=0)
+    result_df = pd.concat(result, axis=0)
     
     return result_df
 
