@@ -7,12 +7,6 @@ from sklearn.model_selection import LeaveOneOut , StratifiedKFold
 from imblearn.over_sampling import SMOTE
 
 
-
-def oversampling(method, x_train, y_train):
-    X_res, y_res = method.fit_resample(x_train, y_train)
-    return X_res, y_res
-
-
 def train_model_k_fold(arr):
 
     """
@@ -21,9 +15,13 @@ def train_model_k_fold(arr):
     Parameters
     ----------
     arr : array
-        Should contain : [model, data, label, index]
+        Should contain : [clf, oversampler ,data, label, index]
             clf : sklearn classifier model which implements fit, predict and predict_proba methods
-        index : array of length 2 : [training_indices , test_indices]
+            oversampler : oversampleing object , default = None
+                This oversampling model must implement fit_resample method. Enables oversampling to mitigate class imbalance issue. Give none for no oversampling
+            data : training data
+            label : labels for training data
+            index : array of length 2 : [training_indices , test_indices]
 
     Returns
     -------
@@ -35,14 +33,17 @@ def train_model_k_fold(arr):
             prob_<class> : membership probability of all classes
     """
 
-    clf , x ,y , index = arr
+    clf ,oversampler ,x ,y , index = arr
     train_index , test_index  , = index[0] , index[1]
     x_train , x_test = x.iloc[train_index , : ] , x.iloc[test_index, :]
     y_train , y_test = y.iloc[train_index] , y.iloc[test_index]
     
-    oversampler  = SMOTE(k_neighbors=2)
-    x_train_up , y_train_up = oversampling(oversampler , x_train, y_train)
-    clf.fit(x_train_up , y_train_up)
+    #oversampler  = SMOTE(k_neighbors=2)
+    if(oversampler):
+        x_train_up , y_train_up = oversampler.fit_resample(x_train , y_train)
+        clf.fit(x_train_up , y_train_up)
+    else: 
+        clf.fit(x_train , y_train)
 
     df = pd.DataFrame({
         'name' : x_test.index.to_list() , 
@@ -60,7 +61,7 @@ def train_model_k_fold(arr):
 
 
 
-def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = True ):
+def cumulative_cross_validation(x ,y , classifier , oversampler = None,  k_fold=-1 , multiprocessing = True ):
 
     """
     Performs a cumulative cross validation 
@@ -74,6 +75,10 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
         training data of size (N,M), N is number of samples, M is number of features
     y : Pandas Series
         Training Labels of size N
+    classifier : sklearn model
+        Classifier model. This mode must implement fit, predict and predict_proba methods
+    oversampler : oversampleing object , default = None
+        This oversampling model must implement fit_resample method. Enables oversampling to mitigate class imbalance issue. Give none for no oversampling
     k_fold : int , default=-1
         Number of folds for cross validation. -1 for leave one out cross vlidation
     multiprocessing : Boolean, default=True
@@ -101,7 +106,7 @@ def cumulative_cross_validation(x ,y , model , k_fold=-1 , multiprocessing = Tru
     # Using CV , split indices for training and validation set
     # and creating a list of k_fold elements, with model, data and labels and corresponding indices.
     index = [(t,i) for t,i in cv.split(x,y)]
-    zipped_arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index ))
+    zipped_arr = list(zip([classifier]*len(index) , [oversampler]*len(index) , [x]*len(index) , [y]*len(index) , index ))
     
     # Training and validation 
     # depending on multiprocessing selected or not.
@@ -203,8 +208,10 @@ class make_model():
     ----------
     name : str
         name of the model
-    clf : sklearn classifier model object
+    classifierf : sklearn classifier model object
         Model to be used for classification. Only those models which implement fit, predict and predict_proba methods are allowed
+    oversampler : oversampleing object , default = None
+        This oversampling model must implement fit_resample method. Enables oversampling to mitigate class imbalance issue. Give none for no oversampling
     train_data : Datarane
          training data without label 
     label : Series
@@ -221,9 +228,9 @@ class make_model():
 
     """
 
-    def __init__(self , name , clf , oversampler , train_data ,label):
+    def __init__(self , name , classifier , oversampler , train_data ,label):
         self.name = name 
-        self.clf = clf 
+        self.clf = classifier 
         self.train_data = train_data
         self.oversampler = oversampler
         self.label = label
@@ -245,7 +252,7 @@ class make_model():
         Choose the averageing method for calcuation of overall precision, recall and f1 score.
         
         """
-        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k_fold , model=self.clf ,oversampler = self.oversampler ,  multiprocessing=multiprocessing)
+        validation_predictions = cumulative_cross_validation(self.train_data,self.label ,k_fold=k_fold , classifier=self.clf ,oversampler = self.oversampler ,  multiprocessing=multiprocessing)
 
         if(save_predictions):
             self.validation_prediction = validation_predictions
