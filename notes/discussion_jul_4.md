@@ -5,6 +5,10 @@
 
 ### KL-Divergence
 *   Similarity between two probability distributions
+*   expectation value of the logarithmic difference between the probabilities 
+
+$D_{KL} (P||Q) = \sum_x P(x) log\left( \frac{P(x)}{Q(x)} \right)$
+
 
 
 > Shows the similarity between the probability distribution
