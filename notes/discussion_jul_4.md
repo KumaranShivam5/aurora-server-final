@@ -3,16 +3,28 @@
 * Present some statistical result on clustering
 * QUantify clustering using KL-Divergence
 
+### KL-Divergence
+*   Similarity between two probability distributions
+
+
 > Shows the similarity between the probability distribution
 
 ### Hardness
+
+
+#### For majority class
+
+<img src= 'images/hard_majority.png'>
+
+|      |      AGN |    STAR |      YSO |
+|:-----|---------:|--------:|---------:|
+| AGN  |  3.07332 | 8.12123 | 12.1434  |
+| STAR | 16.0486  | 7.96227 | 15.3298  |
+| YSO  |  2.52719 | 2.13179 |  2.18784 |
+
+
+#### For Minority class
 <img src= 'images/hard_minority.png'>
-
-
-
-
-
-For Minority class
 
 |        |     HMXB |     LMXB |      ULX |       CV |   PULSAR |
 |:-------|---------:|---------:|---------:|---------:|---------:|
@@ -22,21 +34,12 @@ For Minority class
 | CV     |  5.79033 |  6.21133 |  5.57813 |  5.60474 |  9.02974 |
 | PULSAR | 11.8937  | 13.8857  | 16.1208  | 12.5379  | 21.5276  |
 
-<img src= 'images/hard_majority.png'>
-
-For majority class
-
-|      |      AGN |    STAR |      YSO |
-|:-----|---------:|--------:|---------:|
-| AGN  |  3.07332 | 8.12123 | 12.1434  |
-| STAR | 16.0486  | 7.96227 | 15.3298  |
-| YSO  |  2.52719 | 2.13179 |  2.18784 |
-
 
 
 > One dimensional distribution
 
-<img src = 'images/hard_hm_majority.jpg'>
+<img src = 'images/hard_hm_majority.png'>
+<img src = 'images/hard_hm_minority.png'>
 
 
 ### Color
