@@ -722,7 +722,7 @@ def plot_feat_feat(data , xq,yq , xlabel = '' , ylabel = '' , ax='' , cl = cl):
             rgba_colors[:,2] = 1
             marker = 's'
     #rgba_colors[:, 3] = temp['prob']
-        ax.scatter(temp[xq],temp[yq]  , label=c , marker=marker , color = rgba_colors, s=size)
+        ax.scatter(temp[xq],temp[yq]  , label=c , marker=marker , color = rgba_colors, s=size , alpha=0.5)
         #ax.set_xlabel(xlabel) 
         #ax.set_ylabel(ylabel)
         #ax.legend()
