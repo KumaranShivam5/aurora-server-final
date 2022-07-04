@@ -10,6 +10,8 @@
 
 
 
+
+
 For Minority class
 
 |        |     HMXB |     LMXB |      ULX |       CV |   PULSAR |
@@ -29,6 +31,13 @@ For majority class
 | AGN  |  3.07332 | 8.12123 | 12.1434  |
 | STAR | 16.0486  | 7.96227 | 15.3298  |
 | YSO  |  2.52719 | 2.13179 |  2.18784 |
+
+
+
+> One dimensional distribution
+
+<img src = 'images/hard_hm_majority.jpg'>
+
 
 ### Color
 
