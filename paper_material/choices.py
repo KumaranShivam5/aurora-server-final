@@ -19,9 +19,9 @@ flag = {
 classes =['AGN' ,'YSO' ,'STAR' ,'HMXB' ,'LMXB' ,'ULX' ,'CV' ,'PULSAR']
 def get_train_data(flags=flag , classes=classes , offset = -1 , sig = 0, deets=0 , file = None ,ret_id_cols = ['class']):
     #print(flags)
-    data_id = pd.read_csv('compiled_data_v3/id_frame.csv' , index_col='name')
+    data_id = pd.read_csv('../compiled_data_v3/id_frame.csv' , index_col='name')
     id_col = data_id.columns.to_list()
-    default_data = 'compiled_data_v3/imputed_data_v2/x_phot_minmax_modeimp.csv'
+    default_data = '../compiled_data_v3/imputed_data_v2/x_phot_minmax_modeimp.csv'
     if(file):
         x_data = pd.read_csv(file , index_col = 'name').iloc[:,  1:]
     else:
@@ -42,9 +42,9 @@ def get_train_data(flags=flag , classes=classes , offset = -1 , sig = 0, deets=0
     if(offset>0):
         data = data[data['offset']<=offset+eps]
     max = data['offset'].max()
-    print(f"offset:  \t{data['offset'].min() :.3f}|{data['offset'].max():.3f}")
+    #print(f"offset:  \t{data['offset'].min() :.3f}|{data['offset'].max():.3f}")
     data = data[data['significance']> sig]
-    print(f"singinficance:  {data['significance'].min():.3f}|{data['significance'].max():.3f}")
+    #print(f"singinficance:  {data['significance'].min():.3f}|{data['significance'].max():.3f}")
     data = data[data['class'].isin(classes)]
     src_class = data['class'].to_list()
     x = data[x_col]
