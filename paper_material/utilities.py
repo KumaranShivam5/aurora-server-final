@@ -3,6 +3,7 @@
 #from sre_compile import isstring
 #from turtle import Turtle
 #from turtle import title
+from bz2 import compress
 from IPython.display import display 
 import numpy as np 
 import pandas as pd
@@ -754,6 +755,6 @@ class make_model():
         clf = self.clf
         clf.fit(self.x , self.y)
         return self
-    def save(self , fname):
+    def save(self , fname , compress):
         import joblib
-        joblib.dump(self , fname)
+        joblib.dump(self , fname , compress=compress)
