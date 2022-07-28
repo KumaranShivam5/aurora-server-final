@@ -599,8 +599,8 @@ def take_df_mean(arr):
 
 
 def get_true_data(df_index = [] , offset = 1 , significance = 0 ):
-    df = pd.read_csv('../not_on_git/mw_cat/chandra_filtered_sources.csv' , index_col = 'name')
-    df_id = pd.read_csv('compiled_data_v3/id_frame.csv' , index_col='name')[['offset' , 'class']]
+    df = pd.read_csv('../../not_on_git/mw_cat/chandra_filtered_sources.csv' , index_col = 'name')
+    df_id = pd.read_csv('../compiled_data_v3/id_frame.csv' , index_col='name')[['offset' , 'class']]
     off = offset + 0.01
     df = pd.merge(df_id[df_id['offset']<off] , df , left_index=True , right_index =True , how='right')
     sig = significance
@@ -615,31 +615,31 @@ def get_true_data(df_index = [] , offset = 1 , significance = 0 ):
     })
     df['class'] = df['class'].replace(np.nan , 'X')
     df = pd.merge(
-        df , pd.read_csv('mw_cat/sdss.csv' , index_col='name') ,
+        df , pd.read_csv('../mw_cat/sdss.csv' , index_col='name') ,
         left_index=True , 
         right_index = True , 
         how = 'left'
     )
     df = pd.merge(
-        df , pd.read_csv('mw_cat/2mass_v2.csv' , index_col='name') ,
+        df , pd.read_csv('../mw_cat/2mass_v2.csv' , index_col='name') ,
         left_index=True , 
         right_index = True , 
         how = 'left'
     )
     df = pd.merge(
-        df , pd.read_csv('mw_cat/wise_combined.csv' , index_col='name') ,
+        df , pd.read_csv('../mw_cat/wise_combined.csv' , index_col='name') ,
         left_index=True , 
         right_index = True , 
         how = 'left'
     )
     df = pd.merge(
-        df , pd.read_csv('mw_cat/galex_combined.csv' , index_col='name') ,
+        df , pd.read_csv('../mw_cat/galex_combined.csv' , index_col='name') ,
         left_index=True , 
         right_index = True , 
         how = 'left'
     )
     df = pd.merge(
-        df , pd.read_csv('mw_cat/gaia.csv' , index_col='name') ,
+        df , pd.read_csv('../mw_cat/gaia.csv' , index_col='name') ,
         left_index=True , 
         right_index = True , 
         how = 'left'
