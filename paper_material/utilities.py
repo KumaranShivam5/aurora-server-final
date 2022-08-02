@@ -97,7 +97,7 @@ def train_model_kfold(arr):
         clf = model['model']
     #clf.fit(x_train_up , y_train_up)
     #print("")
-    clf.fit(x_train , y_train)
+    clf.fit(x_train_up , y_train_up)
     df = pd.DataFrame({
         'name' : test_names , 
         'true_class' : y_test , 
