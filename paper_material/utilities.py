@@ -97,7 +97,7 @@ def train_model_kfold(arr):
         clf = model['model']
     #clf.fit(x_train_up , y_train_up)
     #print("")
-    clf.fit(x_train_up , y_train_up)
+    clf.fit(x_train , y_train)
     df = pd.DataFrame({
         'name' : test_names , 
         'true_class' : y_test , 
@@ -139,7 +139,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
         print('[INFO] Doing LeaveOneOut cross-validation')
         cv = LeaveOneOut()
     else:
-        print(f'Doing {k} fold cross-validation')
+        print(f'Doing {k} fold cross-validation , with reshuffling')
         cv = StratifiedKFold(k , shuffle=True)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
