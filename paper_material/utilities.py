@@ -140,7 +140,7 @@ def cv(data , model , k=-1 , return_dict  = ret_dict , save_df = '' , multiproce
         cv = LeaveOneOut()
     else:
         print(f'Doing {k} fold cross-validation')
-        cv = StratifiedKFold(k)# KFold(k) 
+        cv = StratifiedKFold(k , shuffle=True)# KFold(k) 
     model = model
     index = [(t,i) for t,i in cv.split(x,y)]
     arr = list(zip([model]*len(index) , [x]*len(index) , [y]*len(index) , index , [x_name]*len(index)))
