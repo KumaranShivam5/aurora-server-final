@@ -686,9 +686,9 @@ def plot_feat_feat(data, xq, yq, xlabel = '' , ylabel = '' , ax='' , cl = cl):
             rgba_colors[:,0] = 1
             marker='o'
         elif(c=='AGN'):
-            rgba_colors[:,0] = 0.3
-            rgba_colors[:,1] = 0.7
-            rgba_colors[:,2] = 0.3
+            rgba_colors[:,0] = 0.
+            rgba_colors[:,1] = 0.
+            rgba_colors[:,2] = 0.
             marker='2'
         elif(c=='YSO'):
             rgba_colors[:,0] = 0.
@@ -702,7 +702,7 @@ def plot_feat_feat(data, xq, yq, xlabel = '' , ylabel = '' , ax='' , cl = cl):
             marker='s'
         elif(c=='STAR'):
             #rgba_colors[:,0] = 1
-            rgba_colors[:,2] = 1
+            rgba_colors[:,0] = 1
             marker = '*'
             size = 20
         elif(c=='PULSAR'):
