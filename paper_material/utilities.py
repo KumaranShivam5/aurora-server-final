@@ -658,6 +658,28 @@ def get_true_data(df_index = [] , offset = 1 , significance = 0 ):
     df['r-z'] = df['rmag'] - df['zmag']
     df['i-z'] = df['imag'] - df['zmag']
     df['u-z'] = df['umag'] - df['zmag']
+
+    filters = ['b' , 'm' , 's' , 'h' , 'u']
+    # for f in filters:
+    #     df = df[df[f'{f}-csc']>0]
+    for f in filters:
+        df[f'{f}-mag'] = [np.nan]*len(df)
+        df.loc[df[f'{f}-csc']>0 , f'{f}-mag'] = -np.log10(df.loc[df[f'{f}-csc']>0][f'{f}-csc'])
+    df['h-m'] = df['h-mag'] - df['m-mag']
+    df['h-s'] = df['h-mag'] - df['s-mag']
+    df['m-s'] = df['m-mag'] - df['s-mag']
+
+    df['hard_hm'] = np.nan
+    df['hard_ms'] = np.nan
+    df['hard_hs'] = np.nan
+
+    df['hard_hm'] = (df['h-csc'] - df['m-csc']) / (df['h-csc'] + df['m-csc'])
+    df['hard_ms'] = (df['m-csc'] - df['s-csc']) / (df['m-csc'] + df['s-csc'])
+    df['hard_hs'] = (df['h-csc'] - df['s-csc']) / (df['h-csc'] + df['s-csc'])
+
+
+    df['fx/fo'] = df['b-mag'] - df['gmag']
+
     df = df.drop(columns='class').reset_index()
     if(len(df_index)>0):
         df_ret = df[df['name'].isin(df_index.index.to_list())].set_index('name')
