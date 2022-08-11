@@ -666,8 +666,7 @@ def get_true_data(df_index = [] , offset = 1 , significance = 0 ):
     else:
         return df
 cl = [ 'STAR' , 'AGN', 'YSO' , 'HMXB' ,'LMXB' , 'CV' ,'ULX' , 'PULSAR' ]
-def plot_feat_feat(data , xq,yq , xlabel = '' , ylabel = '' , ax='' , cl = cl):
-    
+def plot_feat_feat(data, xq, yq, xlabel = '' , ylabel = '' , ax='' , cl = cl):
     if(ax==''):
         fig , ax =  plt.subplots(nrows=1 , ncols=1 , figsize=(11,6) , sharey=True)
     else:
@@ -723,6 +722,7 @@ def plot_feat_feat(data , xq,yq , xlabel = '' , ylabel = '' , ax='' , cl = cl):
             rgba_colors[:,2] = 1
             marker = 's'
     #rgba_colors[:, 3] = temp['prob']
+    
         ax.scatter(temp[xq],temp[yq]  , label=c , marker=marker , color = rgba_colors, s=size , alpha=0.5)
         #ax.set_xlabel(xlabel) 
         #ax.set_ylabel(ylabel)
