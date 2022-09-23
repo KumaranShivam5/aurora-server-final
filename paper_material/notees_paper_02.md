@@ -13,3 +13,8 @@
 | CV     |      89 |
 | PULSAR |      63 |
 | ULX    |      50 |
+
+![feat_imp](result/plots/feat_imp.jpg)
+
+![coord_sep](result/plots/feature_sep/important_features/gal_coord.png)
+
