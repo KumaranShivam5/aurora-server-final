@@ -18,3 +18,8 @@
 
 ![coord_sep](result/plots/feature_sep/important_features/gal_coord.png)
 
+<table>
+    <tr>
+        <td><img src = ''>
+    </tr>
+</table>
