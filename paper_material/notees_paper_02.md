@@ -23,3 +23,15 @@
         <td><img src = ''>
     </tr>
 </table>
+
+
+
+![coord_sep](result/plots/feature_sep/important_features/b-mag.jpg)
+
+![coord_sep](result/plots/feature_sep/important_features/m-mag.jpg)
+
+
+![coord_sep](result/plots/feature_sep/important_features/h-mag.jpg)
+
+
+![coord_sep](result/plots/feature_sep/important_features/u-mag.jpg)
