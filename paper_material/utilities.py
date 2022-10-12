@@ -621,6 +621,12 @@ def get_true_data(df_index = [] , offset = 1 , significance = 0 ):
         how = 'left'
     )
     df = pd.merge(
+        df , pd.read_csv('../mw_cat/MIPS.csv' , index_col='name') ,
+        left_index=True , 
+        right_index = True , 
+        how = 'left'
+    )
+    df = pd.merge(
         df , pd.read_csv('../mw_cat/2mass_v2.csv' , index_col='name') ,
         left_index=True , 
         right_index = True , 
