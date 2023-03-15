@@ -720,9 +720,10 @@ def plot_feat_feat(data, xq, yq, xlabel = '' , ylabel = '' , ax='' , cl = cl):
             marker='2'
         elif(c=='YSO'):
             rgba_colors[:,0] = 0.
-            rgba_colors[:,1] = 0.
+            rgba_colors[:,1] = 1.
             rgba_colors[:,2] = 0.
-            marker='1'
+            marker='.'
+            size = 15
 
         elif(c=='HMXB'):
             rgba_colors[:,0] = 1
