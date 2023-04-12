@@ -17,8 +17,11 @@ COSMOS : 4015 objects
                 > 5 AGN (cosmos)
         > 217 in the training set as AGN
 
-Couls not find the MyStix point source catalog
 
+
+
+MysTiX sources are not available in CSC
+out of 31549 sources only 11000 sources cross-matched with CSC
 
 
 star-flag
