@@ -15,7 +15,7 @@ COSMOS : 4015 objects
             > 74 Stars 
                 > 12 are nor stars (cosmos)
                 > 5 AGN (cosmos)
-        > 396 should be in training set : need to check
+        > 217 in the training set as AGN
 
 Couls not find the MyStix point source catalog
 
